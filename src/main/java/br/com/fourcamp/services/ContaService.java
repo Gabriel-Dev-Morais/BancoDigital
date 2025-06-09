@@ -23,17 +23,17 @@ public class ContaService {
         return contaRepository.findAll();
     }
 
-    public Conta buscarPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
-        if (!contaRepository.existsByNumeroEAgencia(numeroEAgencia)){
+    public Optional<Conta> buscarPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
+        Optional<Conta> contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia);
+
+        if (contaEncontrada.isEmpty()){
             throw new ContaNaoEncontradaException(numeroEAgencia);
         }
-        else {
-            return contaRepository.findByNumeroEAgencia(numeroEAgencia);
-        }
+        return contaEncontrada;
 
     }
 
-    public void desativarContaPorId(String numeroEAgencia) throws ContaNaoEncontradaException {
+    public void desativarContaPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
         if (!contaRepository.existsByNumeroEAgencia(numeroEAgencia)){
             throw new ContaNaoEncontradaException(numeroEAgencia);
         }
