@@ -1,6 +1,8 @@
 package br.com.fourcamp.models;
 
 import br.com.fourcamp.interfaces.OperacoesBancarias;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,6 +26,7 @@ public class Conta implements OperacoesBancarias {
 
     @Column(name = "cliente")
     @OneToOne
+    @JsonIgnore
     protected Cliente cliente;
 
     @Column(name = "numero e agencia")
@@ -36,7 +39,7 @@ public class Conta implements OperacoesBancarias {
     protected Double saldo;
 
     @Column(name="cartoes")
-    @OneToMany
+    @OneToMany(mappedBy = "conta")
     protected List<Cartao> cartoes;
 
     public Conta(Cliente cliente, String senha) {

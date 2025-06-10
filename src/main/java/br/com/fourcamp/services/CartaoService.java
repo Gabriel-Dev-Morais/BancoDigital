@@ -47,15 +47,15 @@ public class CartaoService {
         }
     }
 
-    public void bloquearCartao(Cartao cartao) throws CartaoNaoEncontradoException {
-        if (cartaoRepository.existsByNumero(cartao.getNumero())){
-            if (cartao.getAtivo()){
-                cartao.setAtivo(false);
-                cartaoRepository.save(cartao);
-            }
+    public void deletarCartao(String numero) throws CartaoNaoEncontradoException {
+
+        if (cartaoRepository.existsByNumero(numero)){
+
+            cartaoRepository.deleteByNumero(numero);
+
         }
         else {
-            throw new CartaoNaoEncontradoException(cartao.getNumero());
+            throw new CartaoNaoEncontradoException(numero);
         }
     }
 }

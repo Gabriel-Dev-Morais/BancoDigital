@@ -39,6 +39,9 @@ public class Cliente {
     @Column(name = "tipo do cliente")
     private TipoCliente tipoCliente;
 
+    @Column(name = "conta")
+    private Conta conta;
+
 
     public Cliente(String nome, String cpf, LocalDate dataDeNascimento, Endereco endereco, TipoCliente tipoCliente) throws CpfInvalidoException, IdadeInvalidaException {
 

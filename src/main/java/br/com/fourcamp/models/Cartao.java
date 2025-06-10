@@ -1,6 +1,8 @@
 package br.com.fourcamp.models;
 
 import br.com.fourcamp.exceptions.SenhaInvalidaException;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -19,13 +21,9 @@ public class Cartao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-
-    @Column(name = "cliente")
-    @ManyToOne
-    protected Cliente cliente;
-
     @Column(name="conta")
     @ManyToOne
+    @JsonIgnore
     protected Conta conta;
 
     @Column(name = "numero do cartao")
@@ -37,15 +35,14 @@ public class Cartao {
     @Column(name = "data de validade")
     protected LocalDate dataValidade;
 
-    @Column(name = "codigo do cartao")
+    @Column(name = "cvc")
     protected String cvc;
 
     @Column(name = "status")
     protected Boolean ativo;
 
-    public Cartao(Long id, Cliente cliente, Conta conta, String senha) throws SenhaInvalidaException {
+    public Cartao(Long id, Conta conta, String senha) throws SenhaInvalidaException {
         this.id = id;
-        this.cliente = cliente;
         this.conta = conta;
         this.numero = criarNumeroCartao();
         this.senha = validarSenha(senha);
@@ -66,9 +63,6 @@ public class Cartao {
         this.conta = conta;
     }
 
-    public void setCliente(Cliente cliente) {
-        this.cliente = cliente;
-    }
 
     public String criarNumeroCartao(){
         Random random = new Random();

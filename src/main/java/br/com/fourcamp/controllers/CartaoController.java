@@ -9,7 +9,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -49,7 +48,7 @@ public class CartaoController {
         }
     }
 
-    @DeleteMapping("/{numero}")
+    @DeleteMapping("/delete/{numero}")
     public ResponseEntity<Cartao> deletarCartao(@PathVariable String numero) throws CartaoNaoEncontradoException {
         Optional<Cartao> cartaoEncontrado = cartaoService.buscarPorNumero(numero);
 
@@ -57,7 +56,7 @@ public class CartaoController {
             return ResponseEntity.notFound().build();
         }
         else {
-            cartaoService.bloquearCartao(cartaoEncontrado.get());
+            cartaoService.deletarCartao(numero);
             return ResponseEntity.noContent().build();
         }
     }
