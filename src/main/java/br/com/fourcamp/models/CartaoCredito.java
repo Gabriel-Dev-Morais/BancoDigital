@@ -5,41 +5,34 @@ import br.com.fourcamp.exceptions.SenhaInvalidaException;
 import br.com.fourcamp.interfaces.Seguro;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "creditos")
-@NoArgsConstructor
-@Getter
-@Setter
 @EqualsAndHashCode
 public class CartaoCredito extends Cartao implements Seguro {
 
-    @Column(name = "fatura")
+    @OneToMany(mappedBy = "cartaoCredito")
     private List<Transacao> fatura;
 
     @Column(name = "limite")
     private Double limite;
 
-    @Column(name = "total da fatura")
+    @Column(name = "total_da_fatura")
     private Double totalFatura;
 
-    @Column(name = "status seguro viagem")
+    @Column(name = "status_seguro_viagem")
     private Boolean seguroViagem;
 
-    @Column(name = "status seguro fraude")
+    @Column(name = "status_seguro_fraude")
     private Boolean seguroFraude;
 
-    public CartaoCredito(Long id, Cliente cliente, Conta conta,String senha, Boolean seguroViagem, Boolean seguroFraude) throws SenhaInvalidaException {
-        super(id, cliente, conta, senha);
-        this.limite = definirLimite();
+    public CartaoCredito(Long id, Conta conta,String senha, Boolean seguroViagem, Boolean seguroFraude) throws SenhaInvalidaException {
+        super(id, conta, senha);
         this.fatura = new ArrayList<>();
         this.totalFatura = 0.0;
         this.seguroViagem = seguroViagem;
@@ -47,6 +40,45 @@ public class CartaoCredito extends Cartao implements Seguro {
         this.seguroFraude = seguroFraude;
     }
 
+    public List<Transacao> getFatura() {
+        return fatura;
+    }
+
+    public void setFatura(List<Transacao> fatura) {
+        this.fatura = fatura;
+    }
+
+    public Double getLimite() {
+        return limite;
+    }
+
+    public void setLimite(Double limite) {
+        this.limite = limite;
+    }
+
+    public Double getTotalFatura() {
+        return totalFatura;
+    }
+
+    public void setTotalFatura(Double totalFatura) {
+        this.totalFatura = totalFatura;
+    }
+
+    public Boolean getSeguroViagem() {
+        return seguroViagem;
+    }
+
+    public void setSeguroViagem(Boolean seguroViagem) {
+        this.seguroViagem = seguroViagem;
+    }
+
+    public Boolean getSeguroFraude() {
+        return seguroFraude;
+    }
+
+    public void setSeguroFraude(Boolean seguroFraude) {
+        this.seguroFraude = seguroFraude;
+    }
 
     public void adicionarFatura(Transacao transacao){
         this.getFatura().add(transacao);
@@ -55,15 +87,15 @@ public class CartaoCredito extends Cartao implements Seguro {
 
 
 
-    public Double definirLimite(){
-        if(this.getCliente().getTipoCliente() == TipoCliente.COMUM){
-            return 1000.0;
+    public void definirLimite(){
+        if(this.getConta().getCliente().getTipoCliente() == TipoCliente.COMUM){
+            this.setLimite(1000.0);
         }
-        else if (this.getCliente().getTipoCliente() == TipoCliente.SUPER){
-            return 5000.0;
+        else if (this.getConta().getCliente().getTipoCliente() == TipoCliente.SUPER){
+            this.setLimite(5000.0);
         }
         else {
-            return 10000.0;
+            this.setLimite(10000.0);
         }
 
     }
@@ -108,7 +140,7 @@ public class CartaoCredito extends Cartao implements Seguro {
 
     @Override
     public void acionarSeguroViagem() {
-        if ((this.getSeguroViagem() && (this.getCliente().getTipoCliente() == TipoCliente.SUPER || this.getCliente().getTipoCliente() == TipoCliente.COMUM)) && this.getAtivo()){
+        if ((this.getSeguroViagem() && (this.getConta().getCliente().getTipoCliente() == TipoCliente.SUPER || this.getConta().getCliente().getTipoCliente() == TipoCliente.COMUM)) && this.getAtivo()){
             this.setTotalFatura(this.getTotalFatura() + 50.0);
         }
     }
@@ -138,20 +170,6 @@ public class CartaoCredito extends Cartao implements Seguro {
     @Override
     public void ativarDesativarSeguroFraude() {
         this.setSeguroFraude(!this.getSeguroFraude());
-    }
-
-    @Override
-    public String toString() {
-        return "CartaoCredito{\n" +
-                "Fatura: " + fatura + "\n" +
-                "Limite: " + limite + "\n" +
-                "Total da Fatura: " + totalFatura + "\n" +
-                "Seguro Viagem: " + seguroViagem + "\n" +
-                "Seguro Fraude: " + seguroFraude + "\n" +
-                "Número do Cartão: " + numero + "\n" +
-                "Data de Validade: " + dataValidade + "\n" +
-                "Ativo: " + ativo + "\n" +
-                "}\n";
     }
 
 }

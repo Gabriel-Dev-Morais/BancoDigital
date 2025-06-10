@@ -1,12 +1,16 @@
 package br.com.fourcamp.models;
 
+import br.com.fourcamp.enums.TipoConta;
 import br.com.fourcamp.interfaces.OperacoesBancarias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +18,8 @@ import java.util.Random;
 
 @Entity
 @Table(name = "contas")
-@Getter
-@NoArgsConstructor
 @EqualsAndHashCode
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Conta implements OperacoesBancarias {
 
     @Id
@@ -24,15 +27,17 @@ public class Conta implements OperacoesBancarias {
     @Column(name = "id", nullable = false)
     protected Long id;
 
-    @Column(name = "cliente")
     @OneToOne
+    @JoinColumn(name = "cliente_id")
     @JsonIgnore
     protected Cliente cliente;
 
-    @Column(name = "numero e agencia")
+    @Column(name = "numero_e_agencia")
     protected String numeroEAgencia;
 
     @Column(name = "senha")
+    @NotBlank
+    @NotNull
     protected String senha;
 
     @Column(name = "saldo")
@@ -42,6 +47,9 @@ public class Conta implements OperacoesBancarias {
     @OneToMany(mappedBy = "conta")
     protected List<Cartao> cartoes;
 
+    public Conta() {
+    }
+
     public Conta(Cliente cliente, String senha) {
         this.cliente = cliente;
         this.numeroEAgencia = definirContaEAgencia();
@@ -50,16 +58,48 @@ public class Conta implements OperacoesBancarias {
         this.cartoes = new ArrayList<>();
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
+    }
+
+    public String getNumeroEAgencia() {
+        return numeroEAgencia;
+    }
+
+    public void setNumeroEAgencia(String numeroEAgencia) {
+        this.numeroEAgencia = numeroEAgencia;
+    }
+
+    public String getSenha() {
+        return senha;
     }
 
     public void setSenha(String senha) {
         this.senha = senha;
     }
 
+    public Double getSaldo() {
+        return saldo;
+    }
+
     public void setSaldo(Double saldo) {
         this.saldo = saldo;
+    }
+
+    public List<Cartao> getCartoes() {
+        return cartoes;
     }
 
     public void setCartoes(List<Cartao> cartoes) {

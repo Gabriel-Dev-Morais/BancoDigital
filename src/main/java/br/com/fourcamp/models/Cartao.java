@@ -4,12 +4,14 @@ import br.com.fourcamp.exceptions.SenhaInvalidaException;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Random;
 
-@Getter
 @EqualsAndHashCode
 @NoArgsConstructor
 @Entity
@@ -21,24 +23,28 @@ public class Cartao {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     protected Long id;
 
-    @Column(name="conta")
+
     @ManyToOne
+    @JoinColumn(name="conta_id")
     @JsonIgnore
     protected Conta conta;
 
-    @Column(name = "numero do cartao")
+    @Column(name = "numero_do_cartao")
     protected String numero;
 
     @Column(name = "senha", length = 4)
+    @NotNull
+    @NotBlank(message = "Seu cartão deve ter uma senha com 4 dígitos!")
+    @Size(min = 4, max = 4, message = "Seu cartão deve ter uma senha com 4 dígitos!")
     protected String senha;
 
-    @Column(name = "data de validade")
+    @Column(name = "data_de_validade")
     protected LocalDate dataValidade;
 
     @Column(name = "cvc")
     protected String cvc;
 
-    @Column(name = "status")
+    @Column(name = "ativo")
     protected Boolean ativo;
 
     public Cartao(Long id, Conta conta, String senha) throws SenhaInvalidaException {
@@ -51,18 +57,45 @@ public class Cartao {
         this.ativo = true;
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setAtivo(Boolean ativo) {
-        this.ativo = ativo;
+    public Conta getConta() {
+        return conta;
     }
 
     public void setConta(Conta conta) {
         this.conta = conta;
     }
 
+    public String getNumero() {
+        return numero;
+    }
+
+    public String getSenha() {
+        return senha;
+    }
+
+    public LocalDate getDataValidade() {
+        return dataValidade;
+    }
+
+    public String getCvc() {
+        return cvc;
+    }
+
+    public Boolean getAtivo() {
+        return ativo;
+    }
+
+    public void setAtivo(Boolean ativo) {
+        this.ativo = ativo;
+    }
 
     public String criarNumeroCartao(){
         Random random = new Random();
@@ -95,11 +128,10 @@ public class Cartao {
     }
 
 
-    public void desativarCartão(){
-        if (!this.getAtivo()){
+    public void desativarCartao() {
+        if (!this.getAtivo()) {
             System.out.println("O cartão já está desativado");
-        }
-        else {
+        } else {
             this.setAtivo(false);
             System.out.println("O cartão foi desativado!");
         }

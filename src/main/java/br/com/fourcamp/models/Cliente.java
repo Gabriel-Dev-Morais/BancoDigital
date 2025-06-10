@@ -1,21 +1,24 @@
 package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoCliente;
+import br.com.fourcamp.enums.TipoConta;
 import br.com.fourcamp.exceptions.CpfInvalidoException;
 import br.com.fourcamp.exceptions.IdadeInvalidaException;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Past;
+import jakarta.validation.constraints.Size;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.Period;
 
 @Entity
 @Table(name = "clientes")
-@Getter
 @EqualsAndHashCode
-@NoArgsConstructor
 public class Cliente {
 
     @Id
@@ -23,53 +26,126 @@ public class Cliente {
     @Column(name = "id", nullable = false)
     private Long id;
 
+    @NotBlank
     @Column(name = "nome")
     private String nome;
 
-    @Column(name = "cpf")
+    @Column(name = "cpf", unique = true)
+    @NotBlank(message = "Você precisa preencher o campo CPF!")
+    @Size(min = 11, max = 11, message = "CPF precisa ter 11 dígitos!")
     private String cpf;
 
-    @Column(name = "data de nascimento")
+    @Column(name = "data_de_nascimento")
+    @JsonFormat(pattern = "dd/MM/yyyy")
+    @Past(message = "A data deve estar no passado!")
     private LocalDate dataDeNascimento;
 
     @Embedded
-    @Column(name = "endereco")
+    @Valid
     private Endereco endereco;
 
-    @Column(name = "tipo do cliente")
+    @Column(name = "tipo_do_cliente")
+    @NotNull(message = "É preciso escolher a categoria de cliente que deseja ser (Comum, Super ou Premium)!")
+    @Enumerated(EnumType.STRING)
     private TipoCliente tipoCliente;
 
-    @Column(name = "conta")
+    @Column(name = "senhaConta")
+    @NotBlank(message = "Precisa ter uma senha para criar a conta!")
+    private String senhaConta;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "conta_id")
+    @NotNull
     private Conta conta;
 
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = "tipo_da_conta")
+    private TipoConta tipoConta;
 
-    public Cliente(String nome, String cpf, LocalDate dataDeNascimento, Endereco endereco, TipoCliente tipoCliente) throws CpfInvalidoException, IdadeInvalidaException {
+    public Cliente() {
+    }
+
+    public Cliente(String nome, String cpf, LocalDate dataDeNascimento, Endereco endereco, TipoCliente tipoCliente, String senhaConta, TipoConta tipoConta) throws CpfInvalidoException, IdadeInvalidaException {
 
         this.nome = validarNome(nome);
         this.cpf = validarCpf(cpf);
         this.dataDeNascimento = validarDataNascimento(dataDeNascimento);
         this.endereco = endereco;
         this.tipoCliente = tipoCliente;
+        this.senhaConta = senhaConta;
+        this.conta = definirTipoConta(tipoConta);
+        this.tipoConta = tipoConta;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public void setId(Long id) {
         this.id = id;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public String getNome() {
+        return nome;
     }
 
-    public void setCpf(String cpf) {
+    public String getCpf() {
+        return cpf.substring(0,3) + "." +
+                cpf.substring(3,6) + "." +
+                cpf.substring(6,9) + "-" +
+                cpf.substring(9,11);
+    }
+
+    public void setCpf(String cpf) throws CpfInvalidoException {
+        if (cpf.length() != 11 || !cpf.matches("\\d{11}")) {
+            throw new CpfInvalidoException("CPF inválido!");
+        }
         this.cpf = cpf;
     }
 
+    public LocalDate getDataDeNascimento() {
+        return dataDeNascimento;
+    }
+
+    public TipoConta getTipoConta() {
+        return tipoConta;
+    }
+
+    public void setTipoConta(TipoConta tipoConta) {
+        this.tipoConta = tipoConta;
+        if (this.senhaConta != null) {
+            this.conta = definirTipoConta(tipoConta);
+        }
+    }
+
+    public Endereco getEndereco() {
+        return endereco;
+    }
     public void setEndereco(Endereco endereco) {
         this.endereco = endereco;
     }
-
+    public TipoCliente getTipoCliente() {
+        return tipoCliente;
+    }
     public void setTipoCliente(TipoCliente tipoCliente) {
         this.tipoCliente = tipoCliente;
+    }
+
+    public Conta getConta() {
+        return conta;
+    }
+    public void setConta(Conta conta) {
+        this.conta = conta;
+    }
+    public String getSenhaConta() {
+        return senhaConta;
+    }
+    public void setSenhaConta(String senhaConta) {
+        this.senhaConta = senhaConta;
+        if (this.tipoConta != null) {
+            this.conta = definirTipoConta(this.tipoConta);
+        }
     }
 
     public String validarNome(String nome){
@@ -80,7 +156,6 @@ public class Cliente {
             return nome;
         }
     }
-
     public String validarCpf(String cpf) throws CpfInvalidoException{
         if(cpf.length() != 11){
             throw new CpfInvalidoException("CPF inválido!");
@@ -94,7 +169,6 @@ public class Cliente {
             return cpf;
         }
     }
-
     public LocalDate validarDataNascimento(LocalDate dataNascimento) throws IdadeInvalidaException{
         LocalDate diaAtual = LocalDate.now();
         int idade = Period.between(dataNascimento, diaAtual).getYears();
@@ -105,19 +179,13 @@ public class Cliente {
             return dataNascimento;
         }
     }
+    public Conta definirTipoConta(TipoConta tipoConta){
+        if (tipoConta.equals("Corrente")){
+            return new ContaCorrente(this, this.getSenhaConta());
 
-
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "Nome: " + nome + "\n" +
-                "CPF: " + cpf + "\n" +
-                "Data de Nascimento: " + dataDeNascimento + "\n" +
-                "Endereço: " + endereco + "\n" +
-                "Sua Categoria de Cliente: " + tipoCliente + "\n" +
-                '}';
+        }
+        else {
+            return new ContaPoupanca(this, this.getSenhaConta());
+        }
     }
-
-
-
 }

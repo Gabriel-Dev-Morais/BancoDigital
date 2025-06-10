@@ -1,8 +1,19 @@
 package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoCliente;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
 
+@Entity
 public class ContaCorrente extends Conta{
+
+
+    public ContaCorrente() {
+    }
+
+    public ContaCorrente(Cliente cliente, String senha) {
+        super(cliente, senha);
+    }
 
     public void taxaManutencao(){
         if(this.getCliente().getTipoCliente().equals(TipoCliente.COMUM)){
@@ -14,17 +25,6 @@ public class ContaCorrente extends Conta{
             }
         }
 
-    }
-
-    @Override
-    public String toString() {
-        return "ContaCorrente{\n" +
-                "Cliente: " + cliente +
-                "Número e Agência: " + numeroEAgencia + "\n" +
-                "Senha: '" + senha + "\n" +
-                "Saldo: " + saldo + "\n" +
-                "Cartões: " + cartoes +
-                '}';
     }
 
 }
