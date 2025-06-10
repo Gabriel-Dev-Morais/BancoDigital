@@ -1,20 +1,36 @@
 package br.com.fourcamp.services;
 
 import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
+import br.com.fourcamp.exceptions.ClienteNaoEncontradoException;
+import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.models.Cartao;
+import br.com.fourcamp.models.Cliente;
+import br.com.fourcamp.models.Conta;
 import br.com.fourcamp.repositories.CartaoRepository;
+import br.com.fourcamp.repositories.ClienteRepository;
+import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CartaoService {
 
     @Autowired
     private CartaoRepository cartaoRepository;
+    @Autowired
+    private ContaRepository contaRepository;
 
-    public Cartao criarCartao(Cartao cartao){
+    public Cartao criarCartao(Cartao cartao, String numeroEAgencia) throws ContaNaoEncontradaException {
+        Optional<Conta> contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia);
+
+        if (contaEncontrada.isEmpty()){
+            throw new ContaNaoEncontradaException(numeroEAgencia);
+        }
+
+        cartao.setConta(contaEncontrada.get());
         return cartaoRepository.save(cartao);
     }
 
@@ -22,7 +38,7 @@ public class CartaoService {
         return cartaoRepository.findAll();
     }
 
-    public Cartao buscarPorNumero(String numero) throws CartaoNaoEncontradoException {
+    public Optional<Cartao> buscarPorNumero(String numero) throws CartaoNaoEncontradoException {
         if (!cartaoRepository.existsByNumero(numero)){
             throw new CartaoNaoEncontradoException(numero);
         }

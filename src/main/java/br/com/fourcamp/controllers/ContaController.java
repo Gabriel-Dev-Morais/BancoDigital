@@ -30,7 +30,7 @@ public class ContaController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/{numeroEAgencia}")
+    @GetMapping("/find/{numeroEAgencia}")
     public ResponseEntity<Conta> pesquisarConta(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
         Optional<Conta> contaEncontrada = contaService.buscarPorNumeroEAgencia(numeroEAgencia);
 
@@ -42,10 +42,17 @@ public class ContaController {
         }
     }
 
-    @DeleteMapping("/{numeroEAgencia}")
+    @DeleteMapping("/delete/{numeroEAgencia}")
     public ResponseEntity<Conta> deletarConta(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
-        contaService.desativarContaPorNumeroEAgencia(numeroEAgencia);
-        return ResponseEntity.noContent().build();
+        Optional<Conta> contaEncontrada = contaService.buscarPorNumeroEAgencia(numeroEAgencia);
+
+        if (contaEncontrada.isEmpty()){
+            return ResponseEntity.notFound().build();
+        }
+        else {
+            contaService.desativarContaPorNumeroEAgencia(numeroEAgencia);
+            return ResponseEntity.noContent().build();
+        }
     }
 
 }

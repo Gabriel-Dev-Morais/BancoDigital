@@ -4,6 +4,7 @@ import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.models.Conta;
 import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,11 +27,11 @@ public class ContaService {
     public Optional<Conta> buscarPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
         Optional<Conta> contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia);
 
-        if (contaEncontrada.isEmpty()){
+        if (contaEncontrada.isEmpty()) {
             throw new ContaNaoEncontradaException(numeroEAgencia);
         }
-        return contaEncontrada;
 
+        return contaEncontrada;
     }
 
     public void desativarContaPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {

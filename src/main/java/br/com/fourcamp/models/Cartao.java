@@ -28,7 +28,6 @@ public class Cartao {
     @ManyToOne
     protected Conta conta;
 
-
     @Column(name = "numero do cartao")
     protected String numero;
 
@@ -61,6 +60,14 @@ public class Cartao {
 
     public void setAtivo(Boolean ativo) {
         this.ativo = ativo;
+    }
+
+    public void setConta(Conta conta) {
+        this.conta = conta;
+    }
+
+    public void setCliente(Cliente cliente) {
+        this.cliente = cliente;
     }
 
     public String criarNumeroCartao(){

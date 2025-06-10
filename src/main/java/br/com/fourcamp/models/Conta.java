@@ -36,6 +36,7 @@ public class Conta implements OperacoesBancarias {
     protected Double saldo;
 
     @Column(name="cartoes")
+    @OneToMany
     protected List<Cartao> cartoes;
 
     public Conta(Cliente cliente, String senha) {
