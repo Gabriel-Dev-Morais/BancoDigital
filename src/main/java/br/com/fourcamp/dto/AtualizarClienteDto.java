@@ -7,7 +7,6 @@ public record AtualizarClienteDto(
         String nome,
         String cpf,
         TipoCliente tipoCliente,
-        String senhaConta,
-        TipoConta tipoConta
+        String senhaConta
 ) {
 }

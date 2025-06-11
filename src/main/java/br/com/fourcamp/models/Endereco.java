@@ -1,8 +1,11 @@
 package br.com.fourcamp.models;
 
+import br.com.fourcamp.enums.Estado;
 import br.com.fourcamp.exceptions.CepInvalidoException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -12,12 +15,10 @@ public class Endereco {
 
     @Column(name = "nome_da_rua")
     @NotBlank(message = "Endereço precisa ter rua!")
-    @NotNull
     private String nomeRua;
 
     @Column(name = "numero")
     @NotBlank(message = "Endereço precisa ter número!")
-    @NotNull
     private String numero;
 
     @Column(name = "complemento")
@@ -26,24 +27,26 @@ public class Endereco {
 
     @Column(name = "bairro")
     @NotBlank(message = "Endereço precisa ter bairro!")
-    @NotNull
     private String bairro;
 
     @Column(name = "cidade")
     @NotBlank(message = "Endereço precisa ter cidade!")
-    @NotNull
     private String cidade;
 
     @Column(name = "cep")
     @NotBlank(message = "Endereço precisa ter CEP!")
-    @NotNull
     @Size(min = 8, max = 8, message = "CEP precisa ter, exatamente, 8 dígitos!")
     private String cep;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    @Column(name = "estado")
+    private Estado estado;
 
     public Endereco() {
     }
 
-    public Endereco(String nomeRua, String numero, String complemento, String bairro, String cidade, String cep) {
+    public Endereco(String nomeRua, String numero, String complemento, String bairro, String cidade, String cep, Estado estado) {
         this.nomeRua = nomeRua;
         this.numero = numero;
         this.complemento = complemento;
@@ -99,6 +102,8 @@ public class Endereco {
         return cep;
     }
 
+
+
     public void setCep(String cep) throws CepInvalidoException {
         if (cep.length() != 8){
             throw new CepInvalidoException("Cep Inválido");
@@ -106,5 +111,11 @@ public class Endereco {
         this.cep = cep;
     }
 
+    public Estado getEstado() {
+        return estado;
+    }
 
+    public void setEstado(Estado estado) {
+        this.estado = estado;
+    }
 }

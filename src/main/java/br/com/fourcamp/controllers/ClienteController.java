@@ -1,8 +1,11 @@
 package br.com.fourcamp.controllers;
 
+import br.com.fourcamp.dto.AtualizarClienteDto;
+import br.com.fourcamp.dto.AtualizarEnderecoDto;
 import br.com.fourcamp.exceptions.ClienteNaoEncontradoException;
 import br.com.fourcamp.exceptions.CpfInvalidoException;
 import br.com.fourcamp.models.Cliente;
+import br.com.fourcamp.models.Endereco;
 import br.com.fourcamp.services.ClienteService;
 import br.com.fourcamp.services.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,30 +47,69 @@ public class ClienteController {
     @GetMapping("/find/{cpf}")
     public ResponseEntity<Cliente> buscarCliente(@PathVariable String cpf){
         try{
-            Optional<Cliente> clienteEncontrado = clienteService.buscarCliente(cpf);
+            Cliente clienteEncontrado = clienteService.buscarCliente(cpf);
 
-            return clienteEncontrado.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
+            return ResponseEntity.ok(clienteEncontrado);
         }
         catch (ClienteNaoEncontradoException e){
-            throw new RuntimeException(e.getMessage(), e);
+            return ResponseEntity.noContent().build();
         }
     }
 
     @DeleteMapping("/delete/{cpf}")
-    public ResponseEntity<Cliente> deletarCliente(@PathVariable String cpf){
-        try{
-            Optional<Cliente> clienteEncontrado = clienteService.buscarCliente(cpf);
-            if (clienteEncontrado.isEmpty()){
-                return ResponseEntity.noContent().build();
-            }
-            else {
-                clienteService.deletarCliente(cpf);
-                return ResponseEntity.ok().build();
-            }
-        }
-        catch (ClienteNaoEncontradoException e){
-            throw new RuntimeException(e.getMessage(), e);
+    public ResponseEntity<Void> deletarCliente(@PathVariable String cpf){
+        try {
+            clienteService.deletarCliente(cpf);
+            return ResponseEntity.ok().build();
+        } catch (ClienteNaoEncontradoException e) {
+            return ResponseEntity.noContent().build();
         }
     }
+
+
+    @PatchMapping("/update/{cpf}")
+    public ResponseEntity<?> atualizarParcialmenteCliente(
+            @PathVariable String cpf,
+            @RequestBody AtualizarClienteDto dto) {
+
+        try {
+            Cliente cliente = clienteService.buscarCliente(cpf); // já lança exceção se não encontrar
+
+            if (dto.nome() != null) cliente.setNome(dto.nome());
+            if (dto.cpf() != null) cliente.setCpf(dto.cpf());
+            if (dto.senhaConta() != null) cliente.setSenhaConta(dto.senhaConta());
+            if (dto.tipoCliente() != null) cliente.setTipoCliente(dto.tipoCliente());
+
+            clienteService.cadastrarCliente(cliente);
+            return ResponseEntity.ok("Cliente atualizado com sucesso!");
+
+        } catch (ClienteNaoEncontradoException | CpfInvalidoException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @PutMapping("/update/{cpf}/endereco")
+    public ResponseEntity<?> atualizarEndereco(@PathVariable String cpf, @RequestBody AtualizarEnderecoDto dto) {
+        try {
+            Cliente cliente = clienteService.buscarCliente(cpf);
+
+            Endereco endereco = cliente.getEndereco();
+            endereco.setNomeRua(dto.nomeRua());
+            endereco.setNumero(dto.numero());
+            endereco.setCidade(dto.cidade());
+            endereco.setBairro(dto.bairro());
+            endereco.setEstado(dto.estado());
+            endereco.setCep(dto.cep());
+
+            cliente.setEndereco(endereco);
+            clienteService.cadastrarCliente(cliente); // ou salvarCliente()
+
+            return ResponseEntity.ok("Endereço atualizado com sucesso!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+
 
 }

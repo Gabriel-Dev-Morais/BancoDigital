@@ -33,14 +33,9 @@ public class ClienteService {
         return clienteRepository.findAll();
     }
 
-    public Optional<Cliente> buscarCliente(String cpf) throws ClienteNaoEncontradoException {
-        Optional<Cliente> clienteEncontrado = clienteRepository.findByCpf(cpf);
-
-        if (clienteEncontrado.isEmpty()) {
-            throw new ClienteNaoEncontradoException(cpf);
-        }
-
-        return clienteEncontrado;
+    public Cliente buscarCliente(String cpf) throws ClienteNaoEncontradoException {
+        return clienteRepository.findByCpf(cpf)
+                .orElseThrow(() -> new ClienteNaoEncontradoException(cpf));
     }
 
     @Transactional
