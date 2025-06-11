@@ -3,7 +3,7 @@ package br.com.fourcamp.models;
 import br.com.fourcamp.enums.TipoCliente;
 import br.com.fourcamp.enums.TipoConta;
 import br.com.fourcamp.exceptions.CpfInvalidoException;
-import br.com.fourcamp.exceptions.IdadeInvalidaException;
+import br.com.fourcamp.exceptions.DataInvalidaException;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
@@ -66,16 +66,21 @@ public class Cliente {
     public Cliente() {
     }
 
-    public Cliente(String nome, String cpf, LocalDate dataDeNascimento, Endereco endereco, TipoCliente tipoCliente, String senhaConta, TipoConta tipoConta) throws CpfInvalidoException, IdadeInvalidaException {
+    public Cliente(String nome, String cpf, LocalDate dataDeNascimento, Endereco endereco, TipoCliente tipoCliente, String senhaConta, TipoConta tipoConta) {
 
-        this.nome = validarNome(nome);
-        this.cpf = validarCpf(cpf);
-        this.dataDeNascimento = validarDataNascimento(dataDeNascimento);
-        this.endereco = endereco;
-        this.tipoCliente = tipoCliente;
-        this.senhaConta = senhaConta;
-        this.conta = definirTipoConta(tipoConta);
-        this.tipoConta = tipoConta;
+        try{
+            this.nome = validarNome(nome);
+            this.cpf = validarCpf(cpf);
+            this.dataDeNascimento = validarDataNascimento(dataDeNascimento);
+            this.endereco = endereco;
+            this.tipoCliente = tipoCliente;
+            this.senhaConta = senhaConta;
+            this.conta = definirTipoConta(tipoConta);
+            this.tipoConta = tipoConta;
+        }
+        catch (CpfInvalidoException | DataInvalidaException | IllegalArgumentException e){
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     public Long getId() {
@@ -169,23 +174,26 @@ public class Cliente {
             return cpf;
         }
     }
-    public LocalDate validarDataNascimento(LocalDate dataNascimento) throws IdadeInvalidaException{
+    public LocalDate validarDataNascimento(LocalDate dataNascimento) throws DataInvalidaException{
         LocalDate diaAtual = LocalDate.now();
         int idade = Period.between(dataNascimento, diaAtual).getYears();
         if (idade < 18){
-            throw new IdadeInvalidaException("Você não tem idade o suficiente para ter uma conta!");
+            throw new DataInvalidaException("Você não tem idade o suficiente para ter uma conta!");
         }
         else {
             return dataNascimento;
         }
     }
     public Conta definirTipoConta(TipoConta tipoConta){
-        if (tipoConta.equals("Corrente")){
+        if (tipoConta.equals("CORRENTE")){
             return new ContaCorrente(this, this.getSenhaConta());
 
         }
-        else {
+        else if (tipoConta.equals("POUPANCA")){
             return new ContaPoupanca(this, this.getSenhaConta());
+        }
+        else {
+            return null;
         }
     }
 }

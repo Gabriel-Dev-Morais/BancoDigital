@@ -1,6 +1,7 @@
 package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoConta;
+import br.com.fourcamp.exceptions.SaldoInsuficienteException;
 import br.com.fourcamp.interfaces.OperacoesBancarias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -123,12 +124,12 @@ public class Conta implements OperacoesBancarias {
     }
 
     @Override
-    public void sacar(Double valor) {
+    public void sacar(Double valor) throws SaldoInsuficienteException {
         if(this.getSaldo() >= valor){
             this.setSaldo(this.getSaldo() - valor);
         }
         else {
-            System.out.println("Saldo insuficiente para o saque!");
+            throw new SaldoInsuficienteException("Saldo Insuficiente!");
         }
     }
 

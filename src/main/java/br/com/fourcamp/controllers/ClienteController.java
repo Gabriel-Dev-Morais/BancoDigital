@@ -1,9 +1,8 @@
 package br.com.fourcamp.controllers;
 
 import br.com.fourcamp.exceptions.ClienteNaoEncontradoException;
-import br.com.fourcamp.exceptions.CpfCadastradoException;
+import br.com.fourcamp.exceptions.CpfInvalidoException;
 import br.com.fourcamp.models.Cliente;
-import br.com.fourcamp.models.ContaCorrente;
 import br.com.fourcamp.services.ClienteService;
 import br.com.fourcamp.services.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +24,15 @@ public class ClienteController {
     private ContaService contaService;
 
     @PostMapping
-    public ResponseEntity<Cliente> cadastrarCliente(@RequestBody Cliente cliente) throws CpfCadastradoException {
+    public ResponseEntity<Cliente> cadastrarCliente(@RequestBody Cliente cliente){
 
-        Cliente novoCliente = clienteService.cadastrarCliente(cliente);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novoCliente);
+        try{
+            Cliente novoCliente = clienteService.cadastrarCliente(cliente);
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoCliente);
+        }
+        catch (CpfInvalidoException e){
+            throw new RuntimeException(e.getMessage(), e);
+        }
 
     }
 
@@ -38,26 +42,31 @@ public class ClienteController {
     }
 
     @GetMapping("/find/{cpf}")
-    public ResponseEntity<Cliente> buscarCliente(@PathVariable String cpf) throws ClienteNaoEncontradoException {
-        Optional<Cliente> clienteEncontrado = clienteService.buscarCliente(cpf);
+    public ResponseEntity<Cliente> buscarCliente(@PathVariable String cpf){
+        try{
+            Optional<Cliente> clienteEncontrado = clienteService.buscarCliente(cpf);
 
-        if (clienteEncontrado.isEmpty()){
-            return ResponseEntity.notFound().build();
+            return clienteEncontrado.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.noContent().build());
         }
-        else {
-            return ResponseEntity.ok(clienteEncontrado.get());
+        catch (ClienteNaoEncontradoException e){
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 
     @DeleteMapping("/delete/{cpf}")
-    public ResponseEntity<Cliente> deletarCliente(@PathVariable String cpf) throws ClienteNaoEncontradoException {
-        Optional<Cliente> clienteEncontrado = clienteService.buscarCliente(cpf);
-        if (clienteEncontrado.isEmpty()){
-            return ResponseEntity.noContent().build();
+    public ResponseEntity<Cliente> deletarCliente(@PathVariable String cpf){
+        try{
+            Optional<Cliente> clienteEncontrado = clienteService.buscarCliente(cpf);
+            if (clienteEncontrado.isEmpty()){
+                return ResponseEntity.noContent().build();
+            }
+            else {
+                clienteService.deletarCliente(cpf);
+                return ResponseEntity.ok().build();
+            }
         }
-        else {
-            clienteService.deletarCliente(cpf);
-            return ResponseEntity.ok().build();
+        catch (ClienteNaoEncontradoException e){
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 

@@ -58,7 +58,7 @@ public class Cartao {
             this.ativo = true;
         }
         catch (SenhaInvalidaException e){
-            throw new RuntimeException(e.getMessage());
+            throw new RuntimeException(e.getMessage(), e);
         }
     }
 

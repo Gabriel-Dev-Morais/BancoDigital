@@ -39,7 +39,7 @@ public class Endereco {
     public Endereco() {
     }
 
-    public Endereco(String nomeRua, String numero, String complemento, String cidade, String cep) throws CepInvalidoException {
+    public Endereco(String nomeRua, String numero, String complemento, String cidade, String cep){
         this.nomeRua = nomeRua;
         this.numero = numero;
         this.complemento = complemento;
