@@ -47,14 +47,19 @@ public class Cartao {
     @Column(name = "ativo")
     protected Boolean ativo;
 
-    public Cartao(Long id, Conta conta, String senha) throws SenhaInvalidaException {
-        this.id = id;
-        this.conta = conta;
-        this.numero = criarNumeroCartao();
-        this.senha = validarSenha(senha);
-        this.dataValidade = definirDataValidade();
-        this.cvc = gerarCvc();
-        this.ativo = true;
+    public Cartao(Long id, Conta conta, String senha){
+        try{
+            this.id = id;
+            this.conta = conta;
+            this.numero = criarNumeroCartao();
+            this.senha = validarSenha(senha);
+            this.dataValidade = definirDataValidade();
+            this.cvc = gerarCvc();
+            this.ativo = true;
+        }
+        catch (SenhaInvalidaException e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     public Long getId() {

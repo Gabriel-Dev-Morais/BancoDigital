@@ -31,7 +31,7 @@ public class CartaoCredito extends Cartao implements Seguro {
     @Column(name = "status_seguro_fraude")
     private Boolean seguroFraude;
 
-    public CartaoCredito(Long id, Conta conta,String senha, Boolean seguroViagem, Boolean seguroFraude) throws SenhaInvalidaException {
+    public CartaoCredito(Long id, Conta conta,String senha, Boolean seguroViagem, Boolean seguroFraude){
         super(id, conta, senha);
         this.fatura = new ArrayList<>();
         this.totalFatura = 0.0;

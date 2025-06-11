@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CartaoDebito extends Cartao{
 
-    public CartaoDebito(Long id, Conta conta, String senha) throws SenhaInvalidaException {
+    public CartaoDebito(Long id, Conta conta, String senha){
         super(id, conta, senha);
     }
 
