@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -18,9 +19,9 @@ public class ContaController {
     private ContaService contaService;
 
     @GetMapping
-    public ResponseEntity<Conta> listarContas(){
-        contaService.listarContas();
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<Conta>> listarContas(){
+
+        return ResponseEntity.ok(contaService.listarContas());
     }
 
     @GetMapping("/find/{numeroEAgencia}")
@@ -32,19 +33,6 @@ public class ContaController {
         }
         else {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    @DeleteMapping("/delete/{numeroEAgencia}")
-    public ResponseEntity<Conta> deletarConta(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
-        Optional<Conta> contaEncontrada = contaService.buscarPorNumeroEAgencia(numeroEAgencia);
-
-        if (contaEncontrada.isEmpty()){
-            return ResponseEntity.notFound().build();
-        }
-        else {
-            contaService.desativarContaPorNumeroEAgencia(numeroEAgencia);
-            return ResponseEntity.noContent().build();
         }
     }
 

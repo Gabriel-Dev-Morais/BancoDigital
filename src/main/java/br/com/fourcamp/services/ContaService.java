@@ -6,6 +6,7 @@ import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,13 +35,13 @@ public class ContaService {
         return contaEncontrada;
     }
 
-    public void desativarContaPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
+    @Transactional
+    public void deletarContaPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
         if (!contaRepository.existsByNumeroEAgencia(numeroEAgencia)){
             throw new ContaNaoEncontradaException(numeroEAgencia);
         }
         else{
             contaRepository.deleteByNumeroEAgencia(numeroEAgencia);
-
         }
     }
 

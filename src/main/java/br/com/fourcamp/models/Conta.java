@@ -29,7 +29,7 @@ public class Conta implements OperacoesBancarias {
     protected Long id;
 
     @OneToOne
-    @JoinColumn(name = "cliente_id")
+    @JoinColumn(name = "cliente_id", unique = true)
     @JsonIgnore
     protected Cliente cliente;
 

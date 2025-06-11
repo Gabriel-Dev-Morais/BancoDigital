@@ -53,7 +53,7 @@ public class Cliente {
     @NotBlank(message = "Precisa ter uma senha para criar a conta!")
     private String senhaConta;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "cliente")
     @JoinColumn(name = "conta_id")
     @NotNull
     private Conta conta;
@@ -100,6 +100,10 @@ public class Cliente {
     }
 
     public String getCpf() {
+        return cpf;
+    }
+
+    public String getCpfFormatado() {
         return cpf.substring(0,3) + "." +
                 cpf.substring(3,6) + "." +
                 cpf.substring(6,9) + "-" +
@@ -152,8 +156,8 @@ public class Cliente {
     }
     public void setSenhaConta(String senhaConta) {
         this.senhaConta = senhaConta;
-        if (this.tipoConta != null) {
-            this.conta = definirTipoConta(this.tipoConta);
+        if (this.conta != null) {
+            this.conta.setSenha(senhaConta);
         }
     }
 
@@ -170,11 +174,6 @@ public class Cliente {
             throw new CpfInvalidoException("CPF inválido!");
         }
         else {
-
-            cpf = cpf.substring(0,3) + "." +
-                    cpf.substring(3,6) + "." +
-                    cpf.substring(6,9) + "-" +
-                    cpf.substring(9,11);
             return cpf;
         }
     }

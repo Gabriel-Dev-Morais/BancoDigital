@@ -48,6 +48,10 @@ public class ClienteService {
         }
     }
 
+    public void atualizarCliente(Cliente cliente){
+         clienteRepository.save(cliente);
+    }
+
 
 
 }
