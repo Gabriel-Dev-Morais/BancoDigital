@@ -185,15 +185,15 @@ public class Cliente {
         }
     }
     public Conta definirTipoConta(TipoConta tipoConta){
-        if (tipoConta.equals("CORRENTE")){
+        if (tipoConta == TipoConta.CORRENTE){
             return new ContaCorrente(this, this.getSenhaConta());
 
         }
-        else if (tipoConta.equals("POUPANCA")){
+        else if (tipoConta == TipoConta.POUPANCA){
             return new ContaPoupanca(this, this.getSenhaConta());
         }
         else {
-            return null;
+            throw new IllegalArgumentException("Tipo de conta inválido!");
         }
     }
 }

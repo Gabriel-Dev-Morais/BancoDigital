@@ -109,7 +109,7 @@ public class Conta implements OperacoesBancarias {
 
     public static String definirContaEAgencia(){
         Random random = new Random();
-        int numeroConta = 1000 + random.nextInt(9000);
+        int numeroConta = 10000 + random.nextInt(90000);
         int agenciaConta = 10 + random.nextInt(90);
         String numeroContaTexto = String.valueOf(numeroConta);
         String agenciaContaTexto = String.valueOf(agenciaConta);
