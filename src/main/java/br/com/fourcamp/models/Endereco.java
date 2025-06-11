@@ -21,9 +21,13 @@ public class Endereco {
     private String numero;
 
     @Column(name = "complemento")
-    @NotBlank
     @NotNull
     private String complemento;
+
+    @Column(name = "bairro")
+    @NotBlank(message = "Endereço precisa ter bairro!")
+    @NotNull
+    private String bairro;
 
     @Column(name = "cidade")
     @NotBlank(message = "Endereço precisa ter cidade!")
@@ -39,10 +43,11 @@ public class Endereco {
     public Endereco() {
     }
 
-    public Endereco(String nomeRua, String numero, String complemento, String cidade, String cep){
+    public Endereco(String nomeRua, String numero, String complemento, String bairro, String cidade, String cep) {
         this.nomeRua = nomeRua;
         this.numero = numero;
         this.complemento = complemento;
+        this.bairro = bairro;
         this.cidade = cidade;
         this.cep = cep;
     }
