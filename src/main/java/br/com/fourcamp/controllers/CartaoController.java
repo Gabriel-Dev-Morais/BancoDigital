@@ -72,4 +72,11 @@ public class CartaoController {
         return ResponseEntity.ok(cartaoService.mostrarFatura(numero));
     }
 
+    @PostMapping("/{numero}/pagar-fatura")
+    public ResponseEntity<String> pagarFatura(@PathVariable String numero){
+        cartaoService.pagarFatura(numero);
+        return ResponseEntity.ok("Fatura paga com sucesso!");
+    }
+
+
 }

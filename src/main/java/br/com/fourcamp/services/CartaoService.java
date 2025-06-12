@@ -111,5 +111,25 @@ public class CartaoService {
         return Collections.emptyList();
     }
 
+    public void pagarFatura(String numero){
+        Cartao cartao = cartaoRepository.findByNumero(numero)
+                .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
+
+        if (cartao instanceof CartaoCredito){
+            CartaoCredito cred = (CartaoCredito) cartao;
+            List<Transacao> fatura = cred.getFatura();
+            cred.pagarFatura();
+
+            cartaoRepository.save(cartao);
+            contaRepository.save(cartao.getConta());
+
+            for(Transacao transacao : fatura){
+                contaRepository.save(transacao.getContaDestino());
+
+            }
+
+            transacaoRepository.deleteAll(fatura);
+        }
+    }
 
 }

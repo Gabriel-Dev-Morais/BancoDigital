@@ -1,6 +1,7 @@
 package br.com.fourcamp.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 @Entity
@@ -49,6 +50,11 @@ public class Transacao {
 
     public Conta getContaDestino() {
         return contaDestino;
+    }
+
+    @JsonProperty("nomeContaDestino")
+    public String getContaDestinoNomeCliente(){
+        return contaDestino.getCliente().getNome();
     }
 
     public void setContaDestino(Conta contaDestino) {
