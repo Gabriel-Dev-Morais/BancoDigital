@@ -2,6 +2,7 @@ package br.com.fourcamp.controllers;
 
 import br.com.fourcamp.dto.CartaoDto;
 import br.com.fourcamp.dto.OperacaoBancariaDto;
+import br.com.fourcamp.dto.TransacaoDto;
 import br.com.fourcamp.exceptions.ClienteNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.exceptions.SaldoInsuficienteException;
@@ -83,5 +84,10 @@ public class ContaController {
         return ResponseEntity.ok("Saque de R$ "+dto.valor()+" feito com sucesso!");
     }
 
+    @PostMapping("/{numeroEAgencia}/transferir")
+    public ResponseEntity<String> transferir(@PathVariable String numeroEAgencia, @RequestBody TransacaoDto dto) throws ContaNaoEncontradaException {
+        contaService.transferir(numeroEAgencia, dto.valor(), dto.numeroEAgenciaDestino());
+        return ResponseEntity.ok("Transferência de R$ "+dto.valor() + " para "+dto.numeroEAgenciaDestino() + " bem-sucedida!");
+    }
 
 }

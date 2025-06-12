@@ -91,4 +91,16 @@ public class ContaService {
         contaRepository.save(conta);
     }
 
+    public void transferir(String numeroEAgencia, Double valor, String numeroEAgenciaDestino) throws ContaNaoEncontradaException {
+        Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
+        Conta contaDestino = contaRepository.findByNumeroEAgencia(numeroEAgenciaDestino)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgenciaDestino));
+
+        conta.transferirPix(valor, contaDestino);
+        contaRepository.save(conta);
+        contaRepository.save(contaDestino);
+
+    }
+
 }
