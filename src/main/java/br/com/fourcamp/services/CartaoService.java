@@ -145,10 +145,11 @@ public class CartaoService {
             contaRepository.save(cartao.getConta());
             clienteRepository.save(cartao.getConta().getCliente());
 
-            for(Transacao transacao : fatura){
+            for(Transacao transacao : fatura) {
                 contaRepository.save(transacao.getContaDestino());
                 clienteRepository.save(transacao.getContaDestino().getCliente());
             }
+
 
             transacaoRepository.deleteAll(fatura);
         }

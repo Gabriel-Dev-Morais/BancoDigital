@@ -82,7 +82,6 @@ public class CartaoCredito extends Cartao implements Seguro {
     public void adicionarFatura(Transacao transacao){
         this.getFatura().add(transacao);
         this.setTotalFatura(this.getTotalFatura() + transacao.getValor());
-
     }
 
 
@@ -103,7 +102,6 @@ public class CartaoCredito extends Cartao implements Seguro {
 
         }
         this.getConta().setSaldo(this.getConta().getSaldo() - valorFatura);
-        this.getFatura().clear();
         this.setTotalFatura(0.0);
         this.acionarSeguroViagem();
 
