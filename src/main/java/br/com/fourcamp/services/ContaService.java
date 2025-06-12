@@ -32,12 +32,10 @@ public class ContaService {
         return contaRepository.findAll();
     }
 
-    public Optional<Conta> buscarPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
-        Optional<Conta> contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia);
+    public Conta buscarPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
+        Conta contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+                .orElseThrow(() -> new RuntimeException("Conta não encontrada!"));
 
-        if (contaEncontrada.isEmpty()) {
-            throw new ContaNaoEncontradaException(numeroEAgencia);
-        }
 
         return contaEncontrada;
     }

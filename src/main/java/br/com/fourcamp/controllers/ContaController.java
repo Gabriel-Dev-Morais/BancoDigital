@@ -38,14 +38,9 @@ public class ContaController {
 
     @GetMapping("/find/{numeroEAgencia}")
     public ResponseEntity<Conta> pesquisarConta(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
-        Optional<Conta> contaEncontrada = contaService.buscarPorNumeroEAgencia(numeroEAgencia);
+        Conta contaEncontrada = contaService.buscarPorNumeroEAgencia(numeroEAgencia);
 
-        if (contaEncontrada.isPresent()){
-            return ResponseEntity.ok().build();
-        }
-        else {
-            return ResponseEntity.notFound().build();
-        }
+        return ResponseEntity.ok(contaEncontrada);
     }
 
     @PostMapping("/{cpf}/cartoes")
