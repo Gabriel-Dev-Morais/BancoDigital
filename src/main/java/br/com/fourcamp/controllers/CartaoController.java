@@ -81,7 +81,6 @@ public class CartaoController {
         return ResponseEntity.ok("Fatura paga com sucesso!");
     }
 
-<<<<<<< HEAD
     @PatchMapping("/{numero}/seguros")
     public ResponseEntity<String> ativarDesativarSeguros(@PathVariable String numero, @RequestBody SeguroDto dto){
         cartaoService.ativarDesativarSeguros(numero, dto.seguroFraude(), dto.seguroViagem());
