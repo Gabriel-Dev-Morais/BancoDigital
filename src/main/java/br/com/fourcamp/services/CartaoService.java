@@ -4,6 +4,7 @@ import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.exceptions.LimiteAtingidoException;
 import br.com.fourcamp.exceptions.SeguroFraudeInativoException;
+
 import br.com.fourcamp.models.*;
 import br.com.fourcamp.repositories.CartaoRepository;
 import br.com.fourcamp.repositories.ClienteRepository;
@@ -105,6 +106,17 @@ public class CartaoService {
             contaRepository.save(contaDestino);
             clienteRepository.save(cartao.getConta().getCliente());
             clienteRepository.save(contaDestino.getCliente());
+        }
+
+        else if (cartao instanceof CartaoCredito){
+            boolean autorizado = ((CartaoCredito) cartao).permitirPagamento(transacao);
+
+            if (autorizado){
+                transacao.setCartaoCredito((CartaoCredito) cartao);
+                transacaoRepository.save(transacao);
+            }
+            contaRepository.save(cartao.getConta());
+            contaRepository.save(contaDestino);
         }
 
 
