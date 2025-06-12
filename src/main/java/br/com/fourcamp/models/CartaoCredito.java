@@ -2,6 +2,7 @@ package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoCartao;
 import br.com.fourcamp.enums.TipoCliente;
+import br.com.fourcamp.exceptions.LimiteAtingidoException;
 import br.com.fourcamp.interfaces.Seguro;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -79,7 +80,6 @@ public class CartaoCredito extends Cartao implements Seguro {
 
     public void adicionarFatura(Transacao transacao){
         this.getFatura().add(transacao);
-        this.setTotalFatura(this.totalFatura += transacao.getValor());
     }
 
 
@@ -90,30 +90,30 @@ public class CartaoCredito extends Cartao implements Seguro {
 
         Double valorFatura = this.getTotalFatura();
 
+        for (Transacao transacao : this.getFatura()){
+            Conta contaDestino = transacao.getContaDestino();
+            contaDestino.setSaldo(contaDestino.getSaldo() + transacao.getValor());
+        }
+
         if (valorFatura >= (0.8 * this.getLimite())){
-            this.setTotalFatura(valorFatura += (0.05 * valorFatura));
-            System.out.println(valorFatura);
-            this.getConta().setSaldo(this.getConta().getSaldo() - this.getTotalFatura());
+            valorFatura += (0.05 * valorFatura);
+
         }
-        else {
-            this.getConta().setSaldo(this.getConta().getSaldo() - valorFatura);
-        }
-        System.out.println("Saldo atual: "+this.getConta().getSaldo());
+        this.getConta().setSaldo(this.getConta().getSaldo() - valorFatura);
         this.getFatura().clear();
         this.setTotalFatura(0.0);
 
     }
 
-    public Boolean permitirPagamento(Transacao transacao){
+    public Boolean permitirPagamento(Transacao transacao) throws LimiteAtingidoException {
         if ((this.getTotalFatura() < this.getLimite()) && this.getAtivo()){
             if (transacao.getValor() <= (this.getLimite() - this.getTotalFatura())){
                 adicionarFatura(transacao);
-                transacao.getContaDestino().setSaldo(transacao.getContaDestino().getSaldo() - transacao.getValor());
+                transacao.setCartaoCredito(this);
                 return true;
             }
             else {
-                System.out.println("Limite do cartão atingido ou cartão desativado!");
-                return false;
+                throw new LimiteAtingidoException("Limite atingido ou cartão desativado!");
             }
         }
         return false;

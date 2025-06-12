@@ -1,5 +1,6 @@
 package br.com.fourcamp.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,11 +12,15 @@ public class Transacao {
 
     @ManyToOne
     @JoinColumn(name = "cartao_credito_id")
+    @JsonIgnore
     private CartaoCredito cartaoCredito;
 
     @ManyToOne
     @JoinColumn(name = "conta_destino_id")
+    @JsonIgnore
     private Conta contaDestino;
+
+    @Column(name = "valor")
     private Double valor;
 
     public Transacao() {

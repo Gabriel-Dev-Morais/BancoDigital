@@ -3,7 +3,9 @@ package br.com.fourcamp.controllers;
 import br.com.fourcamp.dto.TransacaoDto;
 import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
+import br.com.fourcamp.exceptions.LimiteAtingidoException;
 import br.com.fourcamp.models.Cartao;
+import br.com.fourcamp.models.Transacao;
 import br.com.fourcamp.services.CartaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -19,17 +21,6 @@ public class CartaoController {
 
     @Autowired
     private CartaoService cartaoService;
-
-    @PostMapping("/{numeroEAgencia}")
-    public ResponseEntity<Cartao> cadastrarCartao(@RequestBody Cartao cartao, @PathVariable String numeroEAgencia){
-        try{
-            Cartao novoCartao = cartaoService.criarCartao(cartao, numeroEAgencia);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novoCartao);
-        }
-        catch (ContaNaoEncontradaException e){
-            return ResponseEntity.notFound().build();
-        }
-    }
 
     @GetMapping
     public ResponseEntity<List<Cartao>> listarCartoes(){
@@ -70,9 +61,15 @@ public class CartaoController {
     }
 
     @PostMapping("/{numero}/pagar")
-    public ResponseEntity<String> pagar(@PathVariable String numero, @RequestBody TransacaoDto dto) throws ContaNaoEncontradaException {
+    public ResponseEntity<String> pagar(@PathVariable String numero, @RequestBody TransacaoDto dto) throws ContaNaoEncontradaException, LimiteAtingidoException {
         cartaoService.pagar(numero, dto.valor(), dto.numeroEAgenciaDestino());
         return ResponseEntity.ok("Pagamento bem-sucedido!");
+    }
+
+    @GetMapping("/{numero}/fatura")
+    public ResponseEntity<List<Transacao>> verFatura(@PathVariable String numero){
+
+        return ResponseEntity.ok(cartaoService.mostrarFatura(numero));
     }
 
 }
