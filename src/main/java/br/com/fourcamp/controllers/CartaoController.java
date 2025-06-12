@@ -1,5 +1,6 @@
 package br.com.fourcamp.controllers;
 
+import br.com.fourcamp.dto.TransacaoDto;
 import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.models.Cartao;
@@ -66,6 +67,12 @@ public class CartaoController {
     public ResponseEntity<String> desativarCartao(@PathVariable String numero) throws CartaoNaoEncontradoException {
         cartaoService.desativarCartao(numero);
         return ResponseEntity.ok("Cartão desativado!");
+    }
+
+    @PostMapping("/{numero}/pagar")
+    public ResponseEntity<String> pagar(@PathVariable String numero, @RequestBody TransacaoDto dto) throws ContaNaoEncontradaException {
+        cartaoService.pagar(numero, dto.valor(), dto.numeroEAgenciaDestino());
+        return ResponseEntity.ok("Pagamento bem-sucedido!");
     }
 
 }

@@ -18,6 +18,7 @@ public class CartaoDebito extends Cartao{
         super(id, conta, senha, tipoCartao);
     }
 
+
     public void pagar(Transacao transacao){
 
         this.getConta().setSaldo(this.getConta().getSaldo() - transacao.getValor());

@@ -2,8 +2,7 @@ package br.com.fourcamp.services;
 
 import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
-import br.com.fourcamp.models.Cartao;
-import br.com.fourcamp.models.Conta;
+import br.com.fourcamp.models.*;
 import br.com.fourcamp.repositories.CartaoRepository;
 import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,7 @@ public class CartaoService {
         }
     }
 
+
     @Transactional
     public void deletarCartao(String numero){
         Cartao cartao = cartaoRepository.findByNumero(numero)
@@ -59,6 +59,23 @@ public class CartaoService {
         Cartao cartao = cartaoRepository.findByNumero(numero)
                 .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
         cartao.setAtivo(false);
+    }
+
+    public void pagar(String numero, Double valor, String numeroEAgenciaDestino) throws ContaNaoEncontradaException {
+        Cartao cartao = cartaoRepository.findByNumero(numero)
+                .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
+        Conta contaDestino = contaRepository.findByNumeroEAgencia(numeroEAgenciaDestino)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgenciaDestino));
+
+        Transacao transacao = new Transacao(contaDestino, valor);
+
+        if (cartao instanceof CartaoDebito){
+            ((CartaoDebito) cartao).pagar(transacao);
+            contaRepository.save(cartao.getConta());
+            contaRepository.save(contaDestino);
+        }
+
+
     }
 
 
