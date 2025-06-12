@@ -2,12 +2,10 @@ package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoCartao;
 import br.com.fourcamp.enums.TipoCliente;
-import br.com.fourcamp.exceptions.SenhaInvalidaException;
 import br.com.fourcamp.interfaces.Seguro;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 
 import java.util.ArrayList;
@@ -96,16 +94,13 @@ public class CartaoCredito extends Cartao implements Seguro {
             this.setTotalFatura(valorFatura += (0.05 * valorFatura));
             System.out.println(valorFatura);
             this.getConta().setSaldo(this.getConta().getSaldo() - this.getTotalFatura());
-            System.out.println("Saldo atual: "+this.getConta().getSaldo());
-            this.getFatura().clear();
-            this.setTotalFatura(0.0);
         }
         else {
             this.getConta().setSaldo(this.getConta().getSaldo() - valorFatura);
-            System.out.println("Saldo atual: "+this.getConta().getSaldo());
-            this.getFatura().clear();
-            this.setTotalFatura(0.0);
         }
+        System.out.println("Saldo atual: "+this.getConta().getSaldo());
+        this.getFatura().clear();
+        this.setTotalFatura(0.0);
 
     }
 

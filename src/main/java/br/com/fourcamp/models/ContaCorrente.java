@@ -2,7 +2,6 @@ package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoCliente;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
 
 @Entity
 public class ContaCorrente extends Conta{

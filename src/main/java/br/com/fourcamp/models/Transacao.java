@@ -1,7 +1,6 @@
 package br.com.fourcamp.models;
 
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 @Entity
 public class Transacao {

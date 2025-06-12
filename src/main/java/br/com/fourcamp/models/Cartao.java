@@ -3,19 +3,14 @@ package br.com.fourcamp.models;
 import br.com.fourcamp.enums.TipoCartao;
 import br.com.fourcamp.enums.TipoCliente;
 import br.com.fourcamp.exceptions.SenhaInvalidaException;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.time.LocalDate;
 import java.util.Random;
 
 @EqualsAndHashCode
-@NoArgsConstructor
 @Entity
 @Table(name = "cartoes")
 public class Cartao {

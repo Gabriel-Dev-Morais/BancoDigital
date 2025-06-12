@@ -1,13 +1,10 @@
 package br.com.fourcamp.services;
 
 import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
-import br.com.fourcamp.exceptions.ClienteNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.models.Cartao;
-import br.com.fourcamp.models.Cliente;
 import br.com.fourcamp.models.Conta;
 import br.com.fourcamp.repositories.CartaoRepository;
-import br.com.fourcamp.repositories.ClienteRepository;
 import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

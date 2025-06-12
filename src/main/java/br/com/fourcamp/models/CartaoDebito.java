@@ -1,12 +1,9 @@
 package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoCartao;
-import br.com.fourcamp.exceptions.SenhaInvalidaException;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Getter

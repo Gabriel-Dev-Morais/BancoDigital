@@ -1,17 +1,13 @@
 package br.com.fourcamp.models;
 
-import br.com.fourcamp.enums.TipoConta;
 import br.com.fourcamp.exceptions.SaldoInsuficienteException;
 import br.com.fourcamp.interfaces.OperacoesBancarias;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+
 
 import java.util.ArrayList;
 import java.util.List;
