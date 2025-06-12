@@ -62,4 +62,10 @@ public class CartaoController {
         }
     }
 
+    @PatchMapping("/{numero}/desativar")
+    public ResponseEntity<String> desativarCartao(@PathVariable String numero) throws CartaoNaoEncontradoException {
+        cartaoService.desativarCartao(numero);
+        return ResponseEntity.ok("Cartão desativado!");
+    }
+
 }

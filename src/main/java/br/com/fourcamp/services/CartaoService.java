@@ -8,6 +8,7 @@ import br.com.fourcamp.repositories.CartaoRepository;
 import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -44,19 +45,19 @@ public class CartaoService {
         }
     }
 
-    public void deletarCartao(String numero) throws CartaoNaoEncontradoException {
+    @Transactional
+    public void deletarCartao(String numero){
+        Cartao cartao = cartaoRepository.findByNumero(numero)
+                .orElseThrow(() -> new RuntimeException("Cartão não encontrado!"));
+        cartaoRepository.deleteByNumero(cartao.getNumero());
 
-        if (cartaoRepository.existsByNumero(numero)){
-
-            cartaoRepository.deleteByNumero(numero);
-
-        }
-        else {
-            throw new CartaoNaoEncontradoException(numero);
-        }
     }
 
-    public void desativarCartao(Cartao cartao){
+    @Transactional
+    public void desativarCartao(String numero){
+
+        Cartao cartao = cartaoRepository.findByNumero(numero)
+                .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
         cartao.setAtivo(false);
     }
 

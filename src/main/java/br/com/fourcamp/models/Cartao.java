@@ -73,6 +73,10 @@ public class Cartao {
         this.id = id;
     }
 
+    public void setNumero(String numero) {
+        this.numero = numero;
+    }
+
     public Double getLimite() {
         return limite;
     }
