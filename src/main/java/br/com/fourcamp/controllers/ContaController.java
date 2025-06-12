@@ -90,4 +90,10 @@ public class ContaController {
         return ResponseEntity.ok("Transferência de R$ "+dto.valor() + " para "+dto.numeroEAgenciaDestino() + " bem-sucedida!");
     }
 
+    @PatchMapping("/{numeroEAgencia}/taxa-rendimento")
+    public ResponseEntity<String> depositar(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
+        contaService.taxaRendimento(numeroEAgencia);
+        return ResponseEntity.ok("Rendimento feito!");
+    }
+
 }

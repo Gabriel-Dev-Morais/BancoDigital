@@ -3,10 +3,7 @@ package br.com.fourcamp.services;
 import br.com.fourcamp.enums.TipoCartao;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.exceptions.SaldoInsuficienteException;
-import br.com.fourcamp.models.Cartao;
-import br.com.fourcamp.models.CartaoCredito;
-import br.com.fourcamp.models.CartaoDebito;
-import br.com.fourcamp.models.Conta;
+import br.com.fourcamp.models.*;
 import br.com.fourcamp.repositories.CartaoRepository;
 import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -101,6 +98,16 @@ public class ContaService {
         contaRepository.save(conta);
         contaRepository.save(contaDestino);
 
+    }
+
+    public void taxaRendimento(String numeroEAgencia) throws ContaNaoEncontradaException {
+        Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
+
+        if (conta instanceof ContaPoupanca){
+            ((ContaPoupanca) conta).taxaRendimento();
+            contaRepository.save(conta);
+        }
     }
 
 }
