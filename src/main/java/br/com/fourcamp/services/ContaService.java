@@ -2,6 +2,7 @@ package br.com.fourcamp.services;
 
 import br.com.fourcamp.enums.TipoCartao;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
+import br.com.fourcamp.exceptions.SaldoInsuficienteException;
 import br.com.fourcamp.models.Cartao;
 import br.com.fourcamp.models.CartaoCredito;
 import br.com.fourcamp.models.CartaoDebito;
@@ -13,7 +14,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ContaService {
@@ -32,12 +32,10 @@ public class ContaService {
         return contaRepository.findAll();
     }
 
-    public Conta buscarPorNumeroEAgencia(String numeroEAgencia) throws ContaNaoEncontradaException {
-        Conta contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+    public Conta buscarPorNumeroEAgencia(String numeroEAgencia){
+
+        return contaRepository.findByNumeroEAgencia(numeroEAgencia)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada!"));
-
-
-        return contaEncontrada;
     }
 
     @Transactional
@@ -75,6 +73,22 @@ public class ContaService {
 
     public List<Cartao> listarCartoesAtivos(String cpf){
         return cartaoRepository.findByContaClienteCpfAndAtivoTrue(cpf);
+    }
+
+    public void depositar(String numeroEAgencia, Double valor) throws ContaNaoEncontradaException {
+        Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
+
+        conta.depositar(valor);
+        contaRepository.save(conta);
+    }
+
+    public void sacar(String numeroEAgencia, Double valor) throws ContaNaoEncontradaException, SaldoInsuficienteException {
+        Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
+
+        conta.sacar(valor);
+        contaRepository.save(conta);
     }
 
 }

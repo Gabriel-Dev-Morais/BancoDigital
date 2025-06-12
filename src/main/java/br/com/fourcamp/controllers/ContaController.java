@@ -1,8 +1,10 @@
 package br.com.fourcamp.controllers;
 
 import br.com.fourcamp.dto.CartaoDto;
+import br.com.fourcamp.dto.OperacaoBancariaDto;
 import br.com.fourcamp.exceptions.ClienteNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
+import br.com.fourcamp.exceptions.SaldoInsuficienteException;
 import br.com.fourcamp.models.Cartao;
 import br.com.fourcamp.models.Cliente;
 import br.com.fourcamp.models.Conta;
@@ -67,6 +69,18 @@ public class ContaController {
     public ResponseEntity<List<Cartao>> listarCartoesAtivos(@PathVariable String cpf){
         List<Cartao> cartoesAtivos = contaService.listarCartoesAtivos(cpf);
         return ResponseEntity.ok(cartoesAtivos);
+    }
+
+    @PatchMapping("/{numeroEAgencia}/depositar")
+    public ResponseEntity<String> depositar(@PathVariable String numeroEAgencia, @RequestBody OperacaoBancariaDto dto) throws ContaNaoEncontradaException {
+        contaService.depositar(numeroEAgencia, dto.valor());
+        return ResponseEntity.ok("Depósito de R$ "+dto.valor()+" feito com sucesso!");
+    }
+
+    @PatchMapping("/{numeroEAgencia}/sacar")
+    public ResponseEntity<String> sacar(@PathVariable String numeroEAgencia, @RequestBody OperacaoBancariaDto dto) throws SaldoInsuficienteException, ContaNaoEncontradaException {
+        contaService.sacar(numeroEAgencia, dto.valor());
+        return ResponseEntity.ok("Saque de R$ "+dto.valor()+" feito com sucesso!");
     }
 
 
