@@ -69,9 +69,14 @@ public class ContaService {
 
         cartao = cartaoRepository.save(cartao);
         conta.cadastrarCartao(cartao);
-        contaRepository.save(conta); // só pra atualizar a conta com o cartão
+        contaRepository.save(conta);
 
         return cartao;
+    }
+
+
+    public List<Cartao> listarCartoesAtivos(String cpf){
+        return cartaoRepository.findByContaClienteCpfAndAtivoTrue(cpf);
     }
 
 }

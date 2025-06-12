@@ -137,7 +137,7 @@ public class CartaoCredito extends Cartao implements Seguro {
         else {
             if (this.getSeguroFraude() && valorFraude > 5000.0){
                 System.out.println("Cobriremos o valor de R$ 5000.00\nVocê cobrirá o restante (R$ "+(valorFraude - 5000)+")");
-                this.getConta().setSaldo(this.getConta().getSaldo() + (5000 - (valorFraude - 5000)));
+                this.getConta().setSaldo(this.getConta().getSaldo() - (valorFraude - 5000) + 5000);
             }
             else {
                 System.out.println("Lamentamos, mas você não possui o Seguro de Fraude.");

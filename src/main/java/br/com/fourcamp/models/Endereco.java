@@ -95,12 +95,13 @@ public class Endereco {
         this.cidade = cidade;
     }
 
-    public String getCep() {
-        cep = cep.substring(0,5) + "-"+
-                cep.substring(5,8);
-
-        return cep;
+    public String getCepFormatado() {
+        return String.format("%s-%s",
+                cep.substring(0, 5),
+                cep.substring(5, 8)
+        );
     }
+
 
 
 

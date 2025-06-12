@@ -41,7 +41,7 @@ public class Conta implements OperacoesBancarias {
     protected Double saldo;
 
     @Column(name="cartoes")
-    @OneToMany(mappedBy = "conta")
+    @OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
     protected List<Cartao> cartoes;
 
     public Conta() {
@@ -105,12 +105,10 @@ public class Conta implements OperacoesBancarias {
 
     public static String definirContaEAgencia(){
         Random random = new Random();
-        int numeroConta = 10000 + random.nextInt(90000);
-        int agenciaConta = 10 + random.nextInt(90);
-        String numeroContaTexto = String.valueOf(numeroConta);
-        String agenciaContaTexto = String.valueOf(agenciaConta);
+        int numeroConta = random.nextInt(100000);
+        int agenciaConta = random.nextInt(100);
 
-        return numeroConta + "-" +agenciaConta;
+        return String.format("%05d-%02d", numeroConta, agenciaConta);
     }
 
 

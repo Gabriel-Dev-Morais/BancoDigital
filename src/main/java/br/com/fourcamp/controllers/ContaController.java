@@ -67,4 +67,12 @@ public class ContaController {
     }
 
 
+
+    @GetMapping("/{cpf}/cartoes")
+    public ResponseEntity<List<Cartao>> listarCartoesAtivos(@PathVariable String cpf){
+        List<Cartao> cartoesAtivos = contaService.listarCartoesAtivos(cpf);
+        return ResponseEntity.ok(cartoesAtivos);
+    }
+
+
 }

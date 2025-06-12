@@ -120,7 +120,7 @@ public class Cartao {
         int numero3 = random.nextInt(1000,9000);
         int numero4 = random.nextInt(1000,9000);
 
-        return numero1 + " " +numero2 + " " + numero3 + " " + numero4;
+        return String.format("%04d%04d%04d%04d", numero1, numero2, numero3, numero4);
     }
 
     public LocalDate definirDataValidade(){

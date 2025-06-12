@@ -55,4 +55,10 @@ public class CartaoService {
             throw new CartaoNaoEncontradoException(numero);
         }
     }
+
+    public void desativarCartao(Cartao cartao){
+        cartao.setAtivo(false);
+    }
+
+
 }

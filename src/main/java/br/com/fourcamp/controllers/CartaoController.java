@@ -38,14 +38,14 @@ public class CartaoController {
     }
 
     @GetMapping("/find/{numero}")
-    public ResponseEntity<Cartao> buscarCartao(@PathVariable String numero) throws CartaoNaoEncontradoException {
+    public ResponseEntity<Optional<Cartao>> buscarCartao(@PathVariable String numero) throws CartaoNaoEncontradoException {
         Optional<Cartao> cartaoEncontrado = cartaoService.buscarPorNumero(numero);
 
         if (cartaoEncontrado.isEmpty()){
             return ResponseEntity.notFound().build();
         }
         else {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.ok(cartaoEncontrado);
         }
     }
 
