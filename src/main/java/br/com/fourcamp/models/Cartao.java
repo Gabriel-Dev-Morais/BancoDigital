@@ -1,5 +1,7 @@
 package br.com.fourcamp.models;
 
+import br.com.fourcamp.enums.TipoCartao;
+import br.com.fourcamp.enums.TipoCliente;
 import br.com.fourcamp.exceptions.SenhaInvalidaException;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -33,9 +35,6 @@ public class Cartao {
     protected String numero;
 
     @Column(name = "senha", length = 4)
-    @NotNull
-    @NotBlank(message = "Seu cartão deve ter uma senha com 4 dígitos!")
-    @Size(min = 4, max = 4, message = "Seu cartão deve ter uma senha com 4 dígitos!")
     protected String senha;
 
     @Column(name = "data_de_validade")
@@ -47,19 +46,28 @@ public class Cartao {
     @Column(name = "ativo")
     protected Boolean ativo;
 
-    public Cartao(Long id, Conta conta, String senha){
-        try{
+    @Column(name = "tipo_cartao")
+    @Enumerated(value = EnumType.STRING)
+    protected TipoCartao tipoCartao;
+
+    @Column(name = "limite")
+    protected Double limite;
+
+    public Cartao() {
+    }
+
+    public Cartao(Long id, Conta conta, String senha, TipoCartao tipoCartao){
+
             this.id = id;
             this.conta = conta;
             this.numero = criarNumeroCartao();
-            this.senha = validarSenha(senha);
+            this.senha = senha;
             this.dataValidade = definirDataValidade();
             this.cvc = gerarCvc();
             this.ativo = true;
-        }
-        catch (SenhaInvalidaException e){
-            throw new RuntimeException(e.getMessage(), e);
-        }
+            this.tipoCartao = tipoCartao;
+            definirLimite();
+
     }
 
     public Long getId() {
@@ -68,6 +76,14 @@ public class Cartao {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Double getLimite() {
+        return limite;
+    }
+
+    public void setLimite(Double limite) {
+        this.limite = limite;
     }
 
     public Conta getConta() {
@@ -140,6 +156,19 @@ public class Cartao {
             this.setAtivo(false);
             System.out.println("O cartão foi desativado!");
         }
+    }
+
+    public void definirLimite(){
+        if(this.getConta().getCliente().getTipoCliente() == TipoCliente.COMUM){
+            this.setLimite(1000.0);
+        }
+        else if (this.getConta().getCliente().getTipoCliente() == TipoCliente.SUPER){
+            this.setLimite(5000.0);
+        }
+        else {
+            this.setLimite(10000.0);
+        }
+
     }
 
 }

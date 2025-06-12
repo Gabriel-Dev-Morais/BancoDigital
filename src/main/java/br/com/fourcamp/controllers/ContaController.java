@@ -1,7 +1,13 @@
 package br.com.fourcamp.controllers;
 
+import br.com.fourcamp.dto.CartaoDto;
+import br.com.fourcamp.exceptions.ClienteNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
+import br.com.fourcamp.models.Cartao;
+import br.com.fourcamp.models.Cliente;
 import br.com.fourcamp.models.Conta;
+import br.com.fourcamp.services.CartaoService;
+import br.com.fourcamp.services.ClienteService;
 import br.com.fourcamp.services.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +23,12 @@ public class ContaController {
 
     @Autowired
     private ContaService contaService;
+
+    @Autowired
+    private CartaoService cartaoService;
+
+    @Autowired
+    private ClienteService clienteService;
 
     @GetMapping
     public ResponseEntity<List<Conta>> listarContas(){
@@ -35,5 +47,24 @@ public class ContaController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @PostMapping("/{cpf}/cartoes")
+    public ResponseEntity<?> cadastrarCartao(
+            @PathVariable String cpf,
+            @RequestBody CartaoDto dto) {
+        try {
+            Cliente cliente = clienteService.buscarCliente(cpf);
+            String numeroEAgencia = cliente.getConta().getNumeroEAgencia();
+
+            Cartao novo = contaService.criarCartao(numeroEAgencia, dto.senha(), dto.tipoCartao());
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(novo);
+        } catch (ContaNaoEncontradaException | ClienteNaoEncontradoException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 
 }

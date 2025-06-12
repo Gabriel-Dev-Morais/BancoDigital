@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -30,9 +31,9 @@ public class CartaoController {
     }
 
     @GetMapping
-    public ResponseEntity<Cartao> listarCartoes(){
-        cartaoService.listarCartoes();
-        return ResponseEntity.ok().build();
+    public ResponseEntity<List<Cartao>> listarCartoes(){
+
+        return ResponseEntity.ok(cartaoService.listarCartoes());
 
     }
 

@@ -1,5 +1,6 @@
 package br.com.fourcamp.models;
 
+import br.com.fourcamp.enums.TipoCartao;
 import br.com.fourcamp.enums.TipoCliente;
 import br.com.fourcamp.exceptions.SenhaInvalidaException;
 import br.com.fourcamp.interfaces.Seguro;
@@ -31,8 +32,12 @@ public class CartaoCredito extends Cartao implements Seguro {
     @Column(name = "status_seguro_fraude")
     private Boolean seguroFraude;
 
-    public CartaoCredito(Long id, Conta conta,String senha, Boolean seguroViagem, Boolean seguroFraude){
-        super(id, conta, senha);
+
+    public CartaoCredito() {
+    }
+
+    public CartaoCredito(Long id, Conta conta, String senha, TipoCartao tipoCartao, Boolean seguroViagem, Boolean seguroFraude){
+        super(id, conta, senha, tipoCartao);
         this.fatura = new ArrayList<>();
         this.totalFatura = 0.0;
         this.seguroViagem = seguroViagem;
@@ -48,13 +53,7 @@ public class CartaoCredito extends Cartao implements Seguro {
         this.fatura = fatura;
     }
 
-    public Double getLimite() {
-        return limite;
-    }
 
-    public void setLimite(Double limite) {
-        this.limite = limite;
-    }
 
     public Double getTotalFatura() {
         return totalFatura;
@@ -87,18 +86,7 @@ public class CartaoCredito extends Cartao implements Seguro {
 
 
 
-    public void definirLimite(){
-        if(this.getConta().getCliente().getTipoCliente() == TipoCliente.COMUM){
-            this.setLimite(1000.0);
-        }
-        else if (this.getConta().getCliente().getTipoCliente() == TipoCliente.SUPER){
-            this.setLimite(5000.0);
-        }
-        else {
-            this.setLimite(10000.0);
-        }
 
-    }
 
     public void pagarFatura(){
 
