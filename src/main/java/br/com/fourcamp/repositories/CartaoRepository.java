@@ -16,5 +16,6 @@ public interface CartaoRepository extends JpaRepository<Cartao, Long> {
     void deleteByNumero(String numero);
 
     List<Cartao> findByContaClienteCpfAndAtivoTrue(String cpf);
+    List<Cartao> findByAtivoTrue();
 
 }

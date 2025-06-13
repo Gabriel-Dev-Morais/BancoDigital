@@ -44,7 +44,7 @@ public class CartaoService {
     }
 
     public List<Cartao> listarCartoes(){
-        return cartaoRepository.findAll();
+        return cartaoRepository.findByAtivoTrue();
     }
 
     public Optional<Cartao> buscarPorNumero(String numero) throws CartaoNaoEncontradoException {
@@ -71,6 +71,7 @@ public class CartaoService {
         Cartao cartao = cartaoRepository.findByNumero(numero)
                 .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
         cartao.setAtivo(false);
+        cartaoRepository.deleteByNumero(numero);
     }
 
     public void pagar(String numero, Double valor, String numeroEAgenciaDestino) throws ContaNaoEncontradaException, LimiteAtingidoException {
