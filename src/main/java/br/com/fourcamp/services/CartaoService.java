@@ -3,8 +3,10 @@ package br.com.fourcamp.services;
 import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.exceptions.LimiteAtingidoException;
+import br.com.fourcamp.exceptions.SeguroFraudeInativoException;
 import br.com.fourcamp.models.*;
 import br.com.fourcamp.repositories.CartaoRepository;
+import br.com.fourcamp.repositories.ClienteRepository;
 import br.com.fourcamp.repositories.ContaRepository;
 import br.com.fourcamp.repositories.TransacaoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class CartaoService {
     private CartaoRepository cartaoRepository;
     @Autowired
     private ContaRepository contaRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
 
     @Autowired
     private TransacaoRepository transacaoRepository;
@@ -86,6 +91,7 @@ public class CartaoService {
             ((CartaoDebito) cartao).pagar(transacao);
             contaRepository.save(cartao.getConta());
             contaRepository.save(contaDestino);
+
         }
 
         else if (cartao instanceof CartaoCredito){
@@ -97,6 +103,8 @@ public class CartaoService {
             }
             contaRepository.save(cartao.getConta());
             contaRepository.save(contaDestino);
+            clienteRepository.save(cartao.getConta().getCliente());
+            clienteRepository.save(contaDestino.getCliente());
         }
 
 
@@ -123,13 +131,42 @@ public class CartaoService {
 
             cartaoRepository.save(cartao);
             contaRepository.save(cartao.getConta());
+            clienteRepository.save(cartao.getConta().getCliente());
 
             for(Transacao transacao : fatura){
                 contaRepository.save(transacao.getContaDestino());
-
+                clienteRepository.save(transacao.getContaDestino().getCliente());
             }
 
             transacaoRepository.deleteAll(fatura);
+        }
+    }
+
+    public void ativarDesativarSeguros(String numero, Boolean seguroFraude, Boolean seguroViagem) {
+        Cartao cartao = cartaoRepository.findByNumero(numero)
+                .orElseThrow(() -> new RuntimeException("Cartão não encontrado!"));
+
+        if (cartao instanceof CartaoCredito){
+            ((CartaoCredito) cartao).setSeguroFraude(seguroFraude);
+            ((CartaoCredito) cartao).setSeguroViagem(seguroViagem);
+            ((CartaoCredito) cartao).acionarSeguroViagem();
+            cartaoRepository.save(cartao);
+            contaRepository.save(cartao.getConta());
+            clienteRepository.save(cartao.getConta().getCliente());
+        }
+    }
+
+    public void acionarSeguroFraude(String numero, Double valor) throws SeguroFraudeInativoException {
+        Cartao cartao = cartaoRepository.findByNumero(numero)
+                .orElseThrow(() -> new RuntimeException("Cartão não encontrado!"));
+
+        if (cartao instanceof CartaoCredito){
+
+                ((CartaoCredito) cartao).acionarSeguroFraude(valor);
+                cartaoRepository.save(cartao);
+                contaRepository.save(cartao.getConta());
+            clienteRepository.save(cartao.getConta().getCliente());
+
         }
     }
 

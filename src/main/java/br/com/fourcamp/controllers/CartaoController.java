@@ -1,9 +1,12 @@
 package br.com.fourcamp.controllers;
 
+import br.com.fourcamp.dto.FraudeDto;
+import br.com.fourcamp.dto.SeguroDto;
 import br.com.fourcamp.dto.TransacaoDto;
 import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
 import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.exceptions.LimiteAtingidoException;
+import br.com.fourcamp.exceptions.SeguroFraudeInativoException;
 import br.com.fourcamp.models.Cartao;
 import br.com.fourcamp.models.Transacao;
 import br.com.fourcamp.services.CartaoService;
@@ -76,6 +79,24 @@ public class CartaoController {
     public ResponseEntity<String> pagarFatura(@PathVariable String numero){
         cartaoService.pagarFatura(numero);
         return ResponseEntity.ok("Fatura paga com sucesso!");
+    }
+
+    @PatchMapping("/{numero}/seguros")
+    public ResponseEntity<String> ativarDesativarSeguros(@PathVariable String numero, @RequestBody SeguroDto dto){
+        cartaoService.ativarDesativarSeguros(numero, dto.seguroFraude(), dto.seguroViagem());
+        return ResponseEntity.ok("Seguros modificados!");
+    }
+
+    @PostMapping("/{numero}/seguro-fraude")
+    public ResponseEntity<String> acionarSeguroFraude(@PathVariable String numero, @RequestBody FraudeDto dto) throws SeguroFraudeInativoException {
+        cartaoService.acionarSeguroFraude(numero, dto.valor());
+        if (dto.valor() > 5000.0){
+            return ResponseEntity.ok("Cobriremos o valor de R$ 5000.00 enquanto você cobrirá R$ "+ (dto.valor() - 5000.0));
+        }
+        else {
+            return ResponseEntity.ok("Cobriremos o valor de R$ "+dto.valor());
+        }
+
     }
 
 

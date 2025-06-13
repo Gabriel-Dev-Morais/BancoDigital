@@ -3,6 +3,7 @@ package br.com.fourcamp.models;
 import br.com.fourcamp.enums.TipoCartao;
 import br.com.fourcamp.enums.TipoCliente;
 import br.com.fourcamp.exceptions.LimiteAtingidoException;
+import br.com.fourcamp.exceptions.SeguroFraudeInativoException;
 import br.com.fourcamp.interfaces.Seguro;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -102,6 +103,7 @@ public class CartaoCredito extends Cartao implements Seguro {
         }
         this.getConta().setSaldo(this.getConta().getSaldo() - valorFatura);
         this.setTotalFatura(0.0);
+        this.acionarSeguroViagem();
 
     }
 
@@ -129,18 +131,16 @@ public class CartaoCredito extends Cartao implements Seguro {
     }
 
     @Override
-    public void acionarSeguroFraude(Double valorFraude) {
+    public void acionarSeguroFraude(Double valorFraude) throws SeguroFraudeInativoException {
         if ((this.getSeguroFraude() && valorFraude <= 5000.0) && this.getAtivo()){
-            System.out.println("Cobriremos o valor de R$"+valorFraude);
             this.getConta().setSaldo(this.getConta().getSaldo() + valorFraude);
         }
         else {
             if (this.getSeguroFraude() && valorFraude > 5000.0){
-                System.out.println("Cobriremos o valor de R$ 5000.00\nVocê cobrirá o restante (R$ "+(valorFraude - 5000)+")");
                 this.getConta().setSaldo(this.getConta().getSaldo() - (valorFraude - 5000) + 5000);
             }
             else {
-                System.out.println("Lamentamos, mas você não possui o Seguro de Fraude.");
+                throw new SeguroFraudeInativoException("Lamentamos, mas você não possui Seguro Fraude.");
             }
         }
     }
