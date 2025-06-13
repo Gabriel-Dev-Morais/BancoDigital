@@ -130,9 +130,6 @@ public class CartaoService {
                     throw new LimiteAtingidoException("Cartão bloqueado depois de 3 tentativas!");
                 }
             }
-
-
-
     }
 
     public List<Transacao> mostrarFatura(String numero){
