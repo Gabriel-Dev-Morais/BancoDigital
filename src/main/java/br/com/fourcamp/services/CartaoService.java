@@ -106,6 +106,7 @@ public class CartaoService {
             contaRepository.save(contaDestino);
             clienteRepository.save(cartao.getConta().getCliente());
             clienteRepository.save(contaDestino.getCliente());
+
         }
 
         else if (cartao instanceof CartaoCredito){
@@ -117,6 +118,8 @@ public class CartaoService {
             }
             contaRepository.save(cartao.getConta());
             contaRepository.save(contaDestino);
+            clienteRepository.save(cartao.getConta().getCliente());
+            clienteRepository.save(contaDestino.getCliente());
         }
 
 
