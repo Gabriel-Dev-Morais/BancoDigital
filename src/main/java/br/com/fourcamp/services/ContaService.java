@@ -120,4 +120,11 @@ public class ContaService {
         }
     }
 
+    public Double exibirSaldo(String numeroEAgencia) throws ContaNaoEncontradaException {
+        Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
+
+        return conta.getSaldo();
+    }
+
 }

@@ -102,4 +102,10 @@ public class ContaController {
         return ResponseEntity.ok("Taxa de Manutenção cobrada!");
     }
 
+    @GetMapping("/{numeroEAgencia}/saldo")
+    public ResponseEntity<String> exibirSaldo(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
+
+        return ResponseEntity.ok("Saldo: "+ contaService.exibirSaldo(numeroEAgencia));
+    }
+
 }

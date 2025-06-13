@@ -5,7 +5,6 @@ import br.com.fourcamp.models.Conta;
 
 public interface OperacoesBancarias {
 
-    void exibirSaldo();
 
     void sacar(Double valor) throws SaldoInsuficienteException;
 

@@ -112,12 +112,6 @@ public class Conta implements OperacoesBancarias {
         return String.format("%05d-%02d", numeroConta, agenciaConta);
     }
 
-
-    @Override
-    public void exibirSaldo() {
-        System.out.println("Saldo atual: "+this.getSaldo());
-    }
-
     @Override
     public void sacar(Double valor) throws SaldoInsuficienteException {
         if(this.getSaldo() >= valor){
