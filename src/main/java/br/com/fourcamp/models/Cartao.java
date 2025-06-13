@@ -147,16 +147,6 @@ public class Cartao {
             }
     }
 
-
-    public void desativarCartao() {
-        if (!this.getAtivo()) {
-            System.out.println("O cartão já está desativado");
-        } else {
-            this.setAtivo(false);
-            System.out.println("O cartão foi desativado!");
-        }
-    }
-
     public void definirLimite(){
         if(this.getConta().getCliente().getTipoCliente() == TipoCliente.COMUM){
             this.setLimite(1000.0);

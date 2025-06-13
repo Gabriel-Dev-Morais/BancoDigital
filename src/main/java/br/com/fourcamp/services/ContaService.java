@@ -110,4 +110,14 @@ public class ContaService {
         }
     }
 
+    public void taxaManutencao(String numeroEAgencia) throws ContaNaoEncontradaException {
+        Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
+                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
+
+        if (conta instanceof ContaCorrente){
+            ((ContaCorrente) conta).taxaManutencao();
+            contaRepository.save(conta);
+        }
+    }
+
 }
