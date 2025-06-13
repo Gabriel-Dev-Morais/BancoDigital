@@ -23,8 +23,11 @@ public class CartaoDebito extends Cartao{
 
     public void pagar(Transacao transacao){
 
-        this.getConta().setSaldo(this.getConta().getSaldo() - transacao.getValor());
-        transacao.getContaDestino().setSaldo(transacao.getContaDestino().getSaldo() + transacao.getValor());
+        Conta origem = this.getConta();
+        Conta destino = transacao.getContaDestino();
+
+        origem.setSaldo(origem.getSaldo() - transacao.getValor());
+        destino.setSaldo(destino.getSaldo() + transacao.getValor());
     }
 
 }

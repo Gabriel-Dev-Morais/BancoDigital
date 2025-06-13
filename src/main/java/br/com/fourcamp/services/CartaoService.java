@@ -1,9 +1,6 @@
 package br.com.fourcamp.services;
 
-import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
-import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
-import br.com.fourcamp.exceptions.LimiteAtingidoException;
-import br.com.fourcamp.exceptions.SeguroFraudeInativoException;
+import br.com.fourcamp.exceptions.*;
 
 import br.com.fourcamp.models.*;
 import br.com.fourcamp.repositories.CartaoRepository;
@@ -77,10 +74,13 @@ public class CartaoService {
         Cartao cartao = cartaoRepository.findByNumero(numero)
                 .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
         cartao.setAtivo(false);
-        cartaoRepository.deleteByNumero(numero);
+        cartaoRepository.save(cartao);
+        contaRepository.save(cartao.getConta());
+        clienteRepository.save(cartao.getConta().getCliente());
+
     }
 
-    public void pagar(String numero, Double valor, String numeroEAgenciaDestino) throws ContaNaoEncontradaException, LimiteAtingidoException {
+    public void pagar(String numero, Double valor, String numeroEAgenciaDestino, String senhaCartao) throws ContaNaoEncontradaException, LimiteAtingidoException, SenhaInvalidaException {
         Cartao cartao = cartaoRepository.findByNumero(numero)
                 .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
         Conta contaDestino = contaRepository.findByNumeroEAgencia(numeroEAgenciaDestino)
@@ -88,39 +88,49 @@ public class CartaoService {
 
         Transacao transacao = new Transacao(contaDestino, valor);
 
-        if (cartao instanceof CartaoDebito){
-            ((CartaoDebito) cartao).pagar(transacao);
-            contaRepository.save(cartao.getConta());
-            contaRepository.save(contaDestino);
+            if (senhaCartao.equals(cartao.getSenha())){
+                cartao.setTentativas(0);
+                if (cartao instanceof CartaoDebito){
+                    ((CartaoDebito) cartao).pagar(transacao);
+                    contaRepository.save(cartao.getConta());
+                    contaRepository.save(contaDestino);
 
-        }
+                }
 
-        else if (cartao instanceof CartaoCredito){
-            boolean autorizado = ((CartaoCredito) cartao).permitirPagamento(transacao);
+                else if (cartao instanceof CartaoCredito){
 
-            if (autorizado){
-                transacao.setCartaoCredito((CartaoCredito) cartao);
-                transacaoRepository.save(transacao);
+                    boolean autorizado = ((CartaoCredito) cartao).permitirPagamento(transacao);
+
+                    if (autorizado){
+                        transacao.setCartaoCredito((CartaoCredito) cartao);
+                        transacaoRepository.save(transacao);
+
+                    }
+                    cartaoRepository.save(cartao);
+                    contaRepository.save(cartao.getConta());
+                    contaRepository.save(contaDestino);
+                    clienteRepository.save(cartao.getConta().getCliente());
+                    clienteRepository.save(contaDestino.getCliente());
+
+                }
             }
-            contaRepository.save(cartao.getConta());
-            contaRepository.save(contaDestino);
-            clienteRepository.save(cartao.getConta().getCliente());
-            clienteRepository.save(contaDestino.getCliente());
-
-        }
-
-        else if (cartao instanceof CartaoCredito){
-            boolean autorizado = ((CartaoCredito) cartao).permitirPagamento(transacao);
-
-            if (autorizado){
-                transacao.setCartaoCredito((CartaoCredito) cartao);
-                transacaoRepository.save(transacao);
+            else {
+                cartao.setTentativas(cartao.getTentativas() + 1);
+                cartaoRepository.save(cartao);
+                contaRepository.save(cartao.getConta());
+                clienteRepository.save(cartao.getConta().getCliente());
+                if (cartao.getTentativas() < 3){
+                    throw new SenhaInvalidaException("Senha Incorreta! Tente novamente!");
+                }
+                else if (cartao.getTentativas() >= 3){
+                    cartao.desativarCartao();
+                    cartaoRepository.save(cartao);
+                    contaRepository.save(cartao.getConta());
+                    clienteRepository.save(cartao.getConta().getCliente());
+                    throw new LimiteAtingidoException("Cartão bloqueado depois de 3 tentativas!");
+                }
             }
-            contaRepository.save(cartao.getConta());
-            contaRepository.save(contaDestino);
-            clienteRepository.save(cartao.getConta().getCliente());
-            clienteRepository.save(contaDestino.getCliente());
-        }
+
 
 
     }

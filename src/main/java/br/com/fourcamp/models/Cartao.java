@@ -48,6 +48,10 @@ public class Cartao {
     @Column(name = "limite")
     protected Double limite;
 
+    @Column(name = "tentativas")
+    protected Integer tentativas = 0;
+
+
     public Cartao() {
     }
 
@@ -117,6 +121,14 @@ public class Cartao {
         this.ativo = ativo;
     }
 
+    public Integer getTentativas() {
+        return tentativas;
+    }
+
+    public void setTentativas(Integer tentativas) {
+        this.tentativas = tentativas;
+    }
+
     public String criarNumeroCartao(){
         Random random = new Random();
         int numero1 = random.nextInt(1000,9000);
@@ -158,6 +170,10 @@ public class Cartao {
             this.setLimite(10000.0);
         }
 
+    }
+
+    public void desativarCartao(){
+        this.setAtivo(false);
     }
 
 }

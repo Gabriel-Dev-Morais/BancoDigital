@@ -40,7 +40,7 @@ public class ContaController {
     }
 
     @GetMapping("/find/{numeroEAgencia}")
-    public ResponseEntity<Conta> pesquisarConta(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
+    public ResponseEntity<Conta> pesquisarConta(@PathVariable String numeroEAgencia) {
         Conta contaEncontrada = contaService.buscarPorNumeroEAgencia(numeroEAgencia);
 
         return ResponseEntity.ok(contaEncontrada);
@@ -73,28 +73,51 @@ public class ContaController {
     }
 
     @PatchMapping("/{numeroEAgencia}/depositar")
-    public ResponseEntity<String> depositar(@PathVariable String numeroEAgencia, @RequestBody OperacaoBancariaDto dto) throws ContaNaoEncontradaException {
-        contaService.depositar(numeroEAgencia, dto.valor());
-        return ResponseEntity.ok("Depósito de R$ "+dto.valor()+" feito com sucesso!");
+    public ResponseEntity<String> depositar(@PathVariable String numeroEAgencia, @RequestBody OperacaoBancariaDto dto) {
+        try {
+            contaService.depositar(numeroEAgencia, dto.valor());
+            return ResponseEntity.ok("Depósito de R$ "+dto.valor()+" feito com sucesso!");
+        }
+
+        catch (ContaNaoEncontradaException e){
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     @PatchMapping("/{numeroEAgencia}/sacar")
-    public ResponseEntity<String> sacar(@PathVariable String numeroEAgencia, @RequestBody OperacaoBancariaDto dto) throws SaldoInsuficienteException, ContaNaoEncontradaException {
-        contaService.sacar(numeroEAgencia, dto.valor());
-        return ResponseEntity.ok("Saque de R$ "+dto.valor()+" feito com sucesso!");
+    public ResponseEntity<String> sacar(@PathVariable String numeroEAgencia, @RequestBody OperacaoBancariaDto dto) {
+        try{
+            contaService.sacar(numeroEAgencia, dto.valor());
+            return ResponseEntity.ok("Saque de R$ "+dto.valor()+" feito com sucesso!");
+        }
+
+        catch(SaldoInsuficienteException | ContaNaoEncontradaException e){
+            throw new RuntimeException(e.getMessage());
+        }
     }
 
     @PostMapping("/{numeroEAgencia}/transferir")
-    public ResponseEntity<String> transferir(@PathVariable String numeroEAgencia, @RequestBody TransacaoDto dto) throws ContaNaoEncontradaException {
-        contaService.transferir(numeroEAgencia, dto.valor(), dto.numeroEAgenciaDestino());
-        return ResponseEntity.ok("Transferência de R$ "+dto.valor() + " para "+dto.numeroEAgenciaDestino() + " bem-sucedida!");
+    public ResponseEntity<String> transferir(@PathVariable String numeroEAgencia, @RequestBody TransacaoDto dto) {
+        try{
+            contaService.transferir(numeroEAgencia, dto.valor(), dto.numeroEAgenciaDestino());
+            return ResponseEntity.ok("Transferência de R$ "+dto.valor() + " para "+dto.numeroEAgenciaDestino() + " bem-sucedida!");
+        }
+        catch (ContaNaoEncontradaException e){
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     @PatchMapping("/{numeroEAgencia}/taxa-rendimento")
-    public ResponseEntity<String> taxaRendimento(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
+    public ResponseEntity<String> taxaRendimento(@PathVariable String numeroEAgencia){
 
-        contaService.taxaRendimento(numeroEAgencia);
-        return ResponseEntity.ok("Rendimento feito!");
+        try {
+            contaService.taxaRendimento(numeroEAgencia);
+            return ResponseEntity.ok("Rendimento feito!");
+        }
+
+        catch (ContaNaoEncontradaException e){
+            throw new RuntimeException(e.getMessage(), e);
+        }
     }
 
     @PatchMapping("/{numeroEAgencia}/taxa-manutencao")

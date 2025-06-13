@@ -1,12 +1,10 @@
 package br.com.fourcamp.controllers;
 
 import br.com.fourcamp.dto.FraudeDto;
+import br.com.fourcamp.dto.PagarComCartaoDto;
 import br.com.fourcamp.dto.SeguroDto;
 import br.com.fourcamp.dto.TransacaoDto;
-import br.com.fourcamp.exceptions.CartaoNaoEncontradoException;
-import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
-import br.com.fourcamp.exceptions.LimiteAtingidoException;
-import br.com.fourcamp.exceptions.SeguroFraudeInativoException;
+import br.com.fourcamp.exceptions.*;
 import br.com.fourcamp.models.Cartao;
 import br.com.fourcamp.models.Transacao;
 import br.com.fourcamp.services.CartaoService;
@@ -64,9 +62,20 @@ public class CartaoController {
     }
 
     @PostMapping("/{numero}/pagar")
-    public ResponseEntity<String> pagar(@PathVariable String numero, @RequestBody TransacaoDto dto) throws ContaNaoEncontradaException, LimiteAtingidoException {
-        cartaoService.pagar(numero, dto.valor(), dto.numeroEAgenciaDestino());
-        return ResponseEntity.ok("Pagamento bem-sucedido!");
+    public ResponseEntity<String> pagar(@PathVariable String numero, @RequestBody PagarComCartaoDto dto) {
+        try{
+            cartaoService.pagar(numero, dto.valor(), dto.numeroEAgenciaDestino(), dto.senhaCartao());
+            return ResponseEntity.ok("Pagamento bem-sucedido!");
+        }
+        catch (ContaNaoEncontradaException e){
+            throw new RuntimeException(e.getMessage(), e);
+        }
+        catch (LimiteAtingidoException e){
+            throw new RuntimeException("Limite de tentativas atingido!", e);
+        }
+        catch (SenhaInvalidaException e){
+            throw new RuntimeException("Senha Inválida!");
+        }
     }
 
     @GetMapping("/{numero}/fatura")
