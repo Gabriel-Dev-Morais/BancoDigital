@@ -1,6 +1,7 @@
 package br.com.fourcamp.models;
 
 import br.com.fourcamp.enums.TipoCartao;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -8,6 +9,7 @@ import lombok.Getter;
 @Entity
 @Getter
 @EqualsAndHashCode
+@JsonIgnoreProperties(value = {"limite"})
 public class CartaoDebito extends Cartao{
 
 
