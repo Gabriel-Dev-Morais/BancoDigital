@@ -3,13 +3,11 @@ package br.com.fourcamp.controllers;
 import br.com.fourcamp.dto.FraudeDto;
 import br.com.fourcamp.dto.PagarComCartaoDto;
 import br.com.fourcamp.dto.SeguroDto;
-import br.com.fourcamp.dto.TransacaoDto;
 import br.com.fourcamp.exceptions.*;
 import br.com.fourcamp.models.Cartao;
 import br.com.fourcamp.models.Transacao;
 import br.com.fourcamp.services.CartaoService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,7 +54,7 @@ public class CartaoController {
     }
 
     @PatchMapping("/{numero}/desativar")
-    public ResponseEntity<String> desativarCartao(@PathVariable String numero) throws CartaoNaoEncontradoException {
+    public ResponseEntity<String> desativarCartao(@PathVariable String numero){
         cartaoService.desativarCartao(numero);
         return ResponseEntity.ok("Cartão desativado!");
     }

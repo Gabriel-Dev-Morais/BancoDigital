@@ -29,12 +29,6 @@ public class CartaoService {
     @Autowired
     private TransacaoRepository transacaoRepository;
 
-    public CartaoService(CartaoRepository cartaoRepository, ContaRepository contaRepository, TransacaoRepository transacaoRepository) {
-        this.cartaoRepository = cartaoRepository;
-        this.contaRepository = contaRepository;
-        this.transacaoRepository = transacaoRepository;
-    }
-
     public Cartao criarCartao(Cartao cartao, String numeroEAgencia) throws ContaNaoEncontradaException {
         Optional<Conta> contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia);
 
@@ -147,9 +141,8 @@ public class CartaoService {
                 .orElseThrow(() -> new RuntimeException("Cartão não encontrado."));
 
         if (cartao instanceof CartaoCredito){
-            CartaoCredito cred = (CartaoCredito) cartao;
-            List<Transacao> fatura = cred.getFatura();
-            cred.pagarFatura();
+            List<Transacao> fatura = ((CartaoCredito) cartao).getFatura();
+            ((CartaoCredito) cartao).pagarFatura();
 
             cartaoRepository.save(cartao);
             contaRepository.save(cartao.getConta());
