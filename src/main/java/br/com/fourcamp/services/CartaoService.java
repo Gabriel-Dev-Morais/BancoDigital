@@ -99,12 +99,17 @@ public class CartaoService {
                         transacao.setCartaoCredito((CartaoCredito) cartao);
                         transacaoRepository.save(transacao);
 
+                        cartaoRepository.save(cartao);
+                        contaRepository.save(cartao.getConta());
+                        contaRepository.save(contaDestino);
+                        clienteRepository.save(cartao.getConta().getCliente());
+                        clienteRepository.save(contaDestino.getCliente());
+
                     }
-                    cartaoRepository.save(cartao);
-                    contaRepository.save(cartao.getConta());
-                    contaRepository.save(contaDestino);
-                    clienteRepository.save(cartao.getConta().getCliente());
-                    clienteRepository.save(contaDestino.getCliente());
+                    else {
+                        throw new LimiteAtingidoException("Pagamento não autorizado.");
+                    }
+
 
                 }
             }
@@ -173,16 +178,22 @@ public class CartaoService {
     }
 
     public void acionarSeguroFraude(String numero, Double valor) throws SeguroFraudeInativoException {
-        Cartao cartao = cartaoRepository.findByNumero(numero)
-                .orElseThrow(() -> new RuntimeException("Cartão não encontrado!"));
+        try{
+            Cartao cartao = cartaoRepository.findByNumero(numero)
+                    .orElseThrow(() -> new RuntimeException("Cartão não encontrado!"));
 
-        if (cartao instanceof CartaoCredito){
+            if (cartao instanceof CartaoCredito){
 
                 ((CartaoCredito) cartao).acionarSeguroFraude(valor);
                 cartaoRepository.save(cartao);
                 contaRepository.save(cartao.getConta());
-            clienteRepository.save(cartao.getConta().getCliente());
+                clienteRepository.save(cartao.getConta().getCliente());
 
+            }
+
+        }
+        catch (SeguroFraudeInativoException e){
+            throw new RuntimeException("Lamentamos, mas você não possui o Seguro Fraude");
         }
     }
 

@@ -5,6 +5,7 @@ import br.com.fourcamp.exceptions.ContaNaoEncontradaException;
 import br.com.fourcamp.exceptions.SaldoInsuficienteException;
 import br.com.fourcamp.models.*;
 import br.com.fourcamp.repositories.CartaoRepository;
+import br.com.fourcamp.repositories.ClienteRepository;
 import br.com.fourcamp.repositories.ContaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class ContaService {
 
     @Autowired
     private CartaoRepository cartaoRepository;
+
+    @Autowired
+    private ClienteRepository clienteRepository;
 
 
 
@@ -80,6 +84,7 @@ public class ContaService {
 
         conta.depositar(valor);
         contaRepository.save(conta);
+        clienteRepository.save(conta.getCliente());
     }
 
     public void sacar(String numeroEAgencia, Double valor) throws ContaNaoEncontradaException, SaldoInsuficienteException {

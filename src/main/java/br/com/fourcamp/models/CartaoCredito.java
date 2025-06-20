@@ -114,7 +114,7 @@ public class CartaoCredito extends Cartao implements Seguro {
                 transacao.setCartaoCredito(this);
                 return true;
             }
-            else {
+            else if (( this.getTotalFatura() == this.getLimite()) || !this.getAtivo()){
                 throw new LimiteAtingidoException("Limite atingido ou cartão desativado!");
             }
         }

@@ -8,6 +8,7 @@ import br.com.fourcamp.models.Cartao;
 import br.com.fourcamp.models.Transacao;
 import br.com.fourcamp.services.CartaoService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,7 +34,7 @@ public class CartaoController {
         Optional<Cartao> cartaoEncontrado = cartaoService.buscarPorNumero(numero);
 
         if (cartaoEncontrado.isEmpty()){
-            return ResponseEntity.notFound().build();
+            throw new CartaoNaoEncontradoException("Cartão não encontrado!");
         }
         else {
             return ResponseEntity.ok(cartaoEncontrado);
@@ -66,13 +67,14 @@ public class CartaoController {
             return ResponseEntity.ok("Pagamento bem-sucedido!");
         }
         catch (ContaNaoEncontradaException e){
-            throw new RuntimeException(e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
         catch (LimiteAtingidoException e){
-            throw new RuntimeException("Limite de tentativas atingido!", e);
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body("Limite atingido: " + e.getMessage());
         }
         catch (SenhaInvalidaException e){
-            throw new RuntimeException("Senha Inválida!");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Senha inválida!");
         }
     }
 
@@ -95,13 +97,18 @@ public class CartaoController {
     }
 
     @PostMapping("/{numero}/seguro-fraude")
-    public ResponseEntity<String> acionarSeguroFraude(@PathVariable String numero, @RequestBody FraudeDto dto) throws SeguroFraudeInativoException {
-        cartaoService.acionarSeguroFraude(numero, dto.valor());
-        if (dto.valor() > 5000.0){
-            return ResponseEntity.ok("Cobriremos o valor de R$ 5000.00 enquanto você cobrirá R$ "+ (dto.valor() - 5000.0));
+    public ResponseEntity<String> acionarSeguroFraude(@PathVariable String numero, @RequestBody FraudeDto dto){
+        try{
+            cartaoService.acionarSeguroFraude(numero, dto.valor());
+            if (dto.valor() > 5000.0){
+                return ResponseEntity.ok("Cobriremos o valor de R$ 5000.00 enquanto você cobrirá R$ "+ (dto.valor() - 5000.0));
+            }
+            else {
+                return ResponseEntity.ok("Cobriremos o valor de R$ "+dto.valor());
+            }
         }
-        else {
-            return ResponseEntity.ok("Cobriremos o valor de R$ "+dto.valor());
+        catch (SeguroFraudeInativoException e){
+            return ResponseEntity.notFound().build();
         }
 
     }
