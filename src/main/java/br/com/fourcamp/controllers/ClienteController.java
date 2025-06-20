@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 @RestController
 @RequestMapping("/clientes")
-@CrossOrigin(origins = "http://localhost:3000")
 public class ClienteController {
 
     @Autowired
@@ -63,10 +62,10 @@ public class ClienteController {
 
             contaService.deletarContaPorNumeroEAgencia(cliente.getConta().getNumeroEAgencia());
 
-            clienteService.deletarCliente(cliente.getCpf());
+            clienteService.deletarCliente(cpf);
             return ResponseEntity.ok().build();
         } catch (ClienteNaoEncontradoException | ContaNaoEncontradaException e) {
-            return ResponseEntity.noContent().build();
+            return ResponseEntity.notFound().build();
         }
     }
 

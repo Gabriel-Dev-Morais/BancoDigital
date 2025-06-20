@@ -27,6 +27,19 @@ public class ClienteService {
 
     }
 
+    public Cliente autenticar(String cpf, String senha) {
+        String cpfLimpo = cpf.replaceAll("[^\\d]", ""); // Remove pontos e traço
+
+        Cliente cliente = clienteRepository.findByCpf(cpfLimpo)
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
+        if (!cliente.getSenhaConta().equals(senha)) {
+            throw new RuntimeException("Senha inválida");
+        }
+
+        return cliente;
+    }
+
     public List<Cliente> listarClientes(){
         return clienteRepository.findAll();
     }

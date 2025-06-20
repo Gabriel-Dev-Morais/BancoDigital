@@ -1,2 +1,4 @@
-package br.com.fourcamp.controllers;public class LoginResponse {
+package br.com.fourcamp.dto;
+
+public record LoginResponse(String token) {
 }
