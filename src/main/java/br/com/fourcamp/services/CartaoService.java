@@ -29,17 +29,6 @@ public class CartaoService {
     @Autowired
     private TransacaoRepository transacaoRepository;
 
-    public Cartao criarCartao(Cartao cartao, String numeroEAgencia) throws ContaNaoEncontradaException {
-        Optional<Conta> contaEncontrada = contaRepository.findByNumeroEAgencia(numeroEAgencia);
-
-        if (contaEncontrada.isEmpty()){
-            throw new ContaNaoEncontradaException(numeroEAgencia);
-        }
-
-        cartao.setConta(contaEncontrada.get());
-        return cartaoRepository.save(cartao);
-    }
-
     public List<Cartao> listarCartoes(){
         return cartaoRepository.findByAtivoTrue();
     }

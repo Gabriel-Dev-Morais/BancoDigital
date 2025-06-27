@@ -12,6 +12,7 @@ import br.com.fourcamp.services.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +25,9 @@ public class ClienteController {
 
     @Autowired
     private ContaService contaService;
+
+    @Autowired
+    private BCryptPasswordEncoder passwordEncoder;
 
     @PostMapping
     public ResponseEntity<Cliente> cadastrarCliente(@RequestBody Cliente cliente){
@@ -81,16 +85,18 @@ public class ClienteController {
             if (dto.nome() != null) cliente.setNome(dto.nome());
             if (dto.senhaConta() != null){
 
-                cliente.getConta().setSenha(dto.senhaConta());
-                cliente.setSenhaConta(dto.senhaConta());
+                String senhaCriptografada = passwordEncoder.encode(dto.senhaConta());
+                cliente.getConta().setSenha(senhaCriptografada);
+                cliente.setSenhaConta(senhaCriptografada);
             }
             if (dto.tipoCliente() != null) cliente.setTipoCliente(dto.tipoCliente());
+            if(dto.cpf() != null) cliente.setCpf(dto.cpf());
 
             clienteService.atualizarCliente(cliente);
             return ResponseEntity.ok("Cliente atualizado com sucesso!");
 
-        } catch (ClienteNaoEncontradoException e) {
-            throw new RuntimeException(e);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -115,27 +121,5 @@ public class ClienteController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-
-    @PutMapping("/update/{cpfAtual}/cpf")
-    public ResponseEntity<?> atualizarCpf(
-            @PathVariable String cpfAtual,
-            @RequestBody String novoCpf) {
-
-        try {
-            Cliente cliente = clienteService.buscarCliente(cpfAtual);
-
-            cliente.setCpf(novoCpf);
-            cliente.getConta().getCliente().setCpf(novoCpf);
-
-            clienteService.atualizarCliente(cliente);
-
-            return ResponseEntity.ok("CPF atualizado com sucesso!");
-
-        } catch (ClienteNaoEncontradoException | CpfInvalidoException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
-
 
 }

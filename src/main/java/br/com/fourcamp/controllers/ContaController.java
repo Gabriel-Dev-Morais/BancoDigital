@@ -107,12 +107,13 @@ public class ContaController {
         }
     }
 
-    @PatchMapping("/{numeroEAgencia}/taxa-rendimento")
+    @PatchMapping("/{numeroEAgencia}/taxa")
     public ResponseEntity<String> taxaRendimento(@PathVariable String numeroEAgencia){
 
         try {
-            contaService.taxaRendimento(numeroEAgencia);
-            return ResponseEntity.ok("Rendimento feito!");
+
+            contaService.taxa(numeroEAgencia);
+            return ResponseEntity.ok("Taxa aplicada!");
         }
 
         catch (ContaNaoEncontradaException e){
@@ -120,11 +121,6 @@ public class ContaController {
         }
     }
 
-    @PatchMapping("/{numeroEAgencia}/taxa-manutencao")
-    public ResponseEntity<String> taxaManutencao(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {
-        contaService.taxaManutencao(numeroEAgencia);
-        return ResponseEntity.ok("Taxa de Manutenção cobrada!");
-    }
 
     @GetMapping("/{numeroEAgencia}/saldo")
     public ResponseEntity<String> exibirSaldo(@PathVariable String numeroEAgencia) throws ContaNaoEncontradaException {

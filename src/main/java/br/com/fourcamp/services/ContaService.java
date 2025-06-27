@@ -107,22 +107,16 @@ public class ContaService {
 
     }
 
-    public void taxaRendimento(String numeroEAgencia) throws ContaNaoEncontradaException {
-        Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
-                .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
-
-        if (conta instanceof ContaPoupanca){
-            ((ContaPoupanca) conta).taxaRendimento();
-            contaRepository.save(conta);
-        }
-    }
-
-    public void taxaManutencao(String numeroEAgencia) throws ContaNaoEncontradaException {
+    public void taxa(String numeroEAgencia) throws ContaNaoEncontradaException {
         Conta conta = contaRepository.findByNumeroEAgencia(numeroEAgencia)
                 .orElseThrow(() -> new ContaNaoEncontradaException(numeroEAgencia));
 
         if (conta instanceof ContaCorrente){
             ((ContaCorrente) conta).taxaManutencao();
+            contaRepository.save(conta);
+        }
+        else if (conta instanceof ContaPoupanca){
+            ((ContaPoupanca) conta).taxaRendimento();
             contaRepository.save(conta);
         }
     }
