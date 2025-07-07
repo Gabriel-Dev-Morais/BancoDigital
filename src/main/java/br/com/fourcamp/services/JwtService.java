@@ -10,7 +10,7 @@ import java.util.Date;
 @Service
 public class JwtService {
     private final String secret = "seusegredosecretoquenaodesvendar";
-    private final long expiration = 86400000; // 1 dia em ms
+    private final long expiration = 86400000; // Não esquecer: 1 DIA DE VALIDADE
 
     public String gerarToken(String username) {
         return Jwts.builder()

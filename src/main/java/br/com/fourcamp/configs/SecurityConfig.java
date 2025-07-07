@@ -17,7 +17,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 @Configuration
 public class SecurityConfig {
 
-    private final String jwtSecret = "seusegredosecretoquenaodesvendar"; // sua chave secreta
+    private final String jwtSecret = "seusegredosecretoquenaodesvendar";
 
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
@@ -39,7 +39,6 @@ public class SecurityConfig {
 
     @Bean
     public JwtDecoder jwtDecoder() {
-        // configura o JwtDecoder para validar o token usando a secret key (HMAC)
         return NimbusJwtDecoder.withSecretKey(
                 new javax.crypto.spec.SecretKeySpec(jwtSecret.getBytes(), "HMACSHA256")
         ).build();
